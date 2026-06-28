@@ -3,8 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>অসমীয়া অভিধান | Assamese Dictionary Edge</title>
-    <!-- Tailwind CSS CDN -->
+    
+    <!-- Core SEO Meta Tags -->
+    <title>অসমীয়া অভিধান | Assamese Dictionary & Digital Lexicon</title>
+    <meta name="description" content="Search words instantly with the fastest digital Assamese to English dictionary. Features offline access, definitions, transliterations, and context examples.">
+    <meta name="keywords" content="Assamese dictionary, অসমীয়া অভিধান, xobdo, Assamese to English translation, learn Assamese, Assamese language lexicon">
+    <meta name="author" content="Naruttam Boruah">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook Previews -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://assamesedictionary.org/">
+    <meta property="og:title" content="অসমীয়া অভিধান | Assamese Digital Lexicon">
+    <meta property="og:description" content="Look up Assamese and English definitions instantly. Optimized for seamless offline search and modern dictionary access.">
+    <meta property="og:image" content="https://assamesedictionary.org/logo.png">
+
+    <!-- Twitter Previews -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://assamesedictionary.org/">
+    <meta property="twitter:title" content="অসমীয়া অভিধান | Assamese Digital Lexicon">
+    <meta property="twitter:description" content="Look up Assamese and English definitions instantly. Optimized for seamless offline search and modern dictionary access.">
+    <meta property="twitter:image" content="https://assamesedictionary.org/logo.png">
+
+    <!-- Schema.org Markup for AI Engines (LLMO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "DefinedTermSet",
+      "@id": "https://assamesedictionary.org",
+      "name": "অসমীয়া ডিজিটেল লেক্সিকন (Assamese Digital Lexicon)",
+      "description": "The ultimate open-access digital Assamese to English dictionary mapping definitions, phonetic transliterations, and context examples.",
+      "url": "https://assamesedictionary.org/",
+      "provider": {
+        "@type": "Person",
+        "name": "Naruttam Boruah"
+      },
+      "educationalUse": "Lexicography, Language Learning",
+      "inLanguage": ["as", "en"]
+    }
+    </script>
+
+    <!-- Tailwind CSS CDN & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
@@ -12,6 +51,7 @@
         .font-en { font-family: 'Plus Jakarta Sans', sans-serif; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
     </style>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#115e59">
 
@@ -46,7 +86,7 @@
     <!-- CORE INTERFACE WRAPPER -->
     <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6 mb-24">
         
-        <!-- SEARCH SEARCH HUB BAR -->
+        <!-- SEARCH HUB BAR -->
         <div class="relative">
             <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-xs border border-slate-200/80 focus-within:border-teal-500 focus-within:ring-4 focus-within:ring-teal-50/50 transition-all">
                 <div class="flex items-center pl-2 text-slate-400 text-lg">🔍</div>
@@ -67,7 +107,7 @@
         </div>
 
         <!-- HERO CORE CANVAS INTERFACE -->
-        <div id="dictionary-display-core" class="bg-white rounded-3xl p-6 shadow-xs border border-slate-200/60 flex-1 flex flex-col min-h-[360px] relative">
+        <div id="dictionary-display-core" class="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/60 flex-1 flex flex-col min-h-[360px] relative overflow-hidden">
             
             <!-- HOMEPAGE COMPONENT: INITIAL EMPTY STATE & WORD OF THE DAY -->
             <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-6 gap-6">
@@ -101,25 +141,32 @@
 
             <!-- VIEWPORT LAYOUT COMPONENT: ACTIVE DEFINITION VIEWER -->
             <div id="meaning-content" class="hidden flex-1 flex flex-col gap-5">
-                <!-- TOP HEADER BAR BLOCK -->
-                <div class="flex justify-between items-start border-b border-slate-100 pb-4 gap-4">
-                    <div>
-                        <div class="flex flex-wrap items-center gap-2.5">
-                            <h2 id="view-word" class="text-3xl font-bold text-teal-950 tracking-wide font-as">--</h2>
-                            <span id="view-type" class="bg-teal-50 text-teal-800 border border-teal-100 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide font-en">NOUN</span>
+                
+                <!-- TOP HEADER BAR BLOCK: Fixed Overflow Stacking Layout -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-slate-100 pb-4 gap-4">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h2 id="view-word" class="text-2xl sm:text-3xl font-bold text-teal-950 tracking-wide font-as break-words max-w-full">--</h2>
+                            <span id="view-type" class="bg-teal-50 text-teal-800 border border-teal-100 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide font-en shrink-0">NOUN</span>
                         </div>
                         <p id="view-transliteration" class="text-xs text-slate-400 mt-1 italic font-en">--</p>
                     </div>
-                    <div class="flex gap-1.5 shrink-0">
-                        <button id="copy-toast-btn" onclick="copyWordToClipboard()" class="p-2 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl border border-slate-200/60 shadow-3xs cursor-pointer text-xs font-semibold flex items-center gap-1 transition-all">📋 Copy Word</button>
-                        <button id="bookmark-toggle-btn" onclick="toggleActiveBookmarkState()" class="p-2 bg-slate-50 hover:bg-amber-50 text-slate-400 hover:text-amber-500 rounded-xl border border-slate-200/60 shadow-3xs cursor-pointer transition-all">⭐</button>
+                    
+                    <!-- Action Buttons: Handled cleanly across flex wrapping layouts -->
+                    <div class="flex items-center gap-2 mt-1 sm:mt-0 shrink-0 w-full sm:w-auto justify-start sm:justify-end">
+                        <button id="copy-toast-btn" onclick="copyWordToClipboard()" class="flex-1 sm:flex-initial p-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl border border-slate-200/60 shadow-3xs cursor-pointer text-xs font-semibold flex items-center justify-center gap-1.5 transition-all whitespace-nowrap">
+                            📋 Copy Word
+                        </button>
+                        <button id="bookmark-toggle-btn" onclick="toggleActiveBookmarkState()" class="p-2 px-3 bg-slate-50 hover:bg-amber-50 text-slate-400 hover:text-amber-500 rounded-xl border border-slate-200/60 shadow-3xs cursor-pointer transition-all flex items-center justify-center">
+                            ⭐
+                        </button>
                     </div>
                 </div>
 
                 <!-- DETAILED SYNONYM GRID MAPPING -->
                 <div>
                     <h5 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 font-en">Synonyms & Mappings</h5>
-                    <div id="view-meaning">
+                    <div id="view-meaning" class="flex flex-wrap gap-1.5">
                         <!-- Dynamic keyword cross-links badges mount here -->
                     </div>
                 </div>
@@ -143,7 +190,7 @@
                 </div>
 
                 <!-- CORRECTION LAUNCH TRIGGER FOOTER -->
-                <div class="mt-auto border-t border-slate-100 pt-3 flex justify-between items-center text-xs text-slate-400">
+                <div class="mt-auto border-t border-slate-100 pt-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-400">
                     <span>Inaccurate entry mappings?</span>
                     <button onclick="openCorrectionForm()" class="text-teal-600 font-bold hover:underline cursor-pointer">Report Translation Correction 🛠️</button>
                 </div>
@@ -151,7 +198,7 @@
         </div>
     </main>
 
-    <!-- SLIDEOUT SLIDING CONTAINER MODULE: FAVORITES / BOOKMARKS MANAGER -->
+    <!-- SLIDEOUT MODULE: FAVORITES / BOOKMARKS MANAGER -->
     <div id="sidebar-overlay" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 transition-all" onclick="toggleFavoritesSidebar()"></div>
     <div id="favorites-sidebar" class="fixed top-0 right-0 bottom-0 w-80 bg-white shadow-2xl z-50 translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200">
         <div class="p-4 bg-slate-50 border-b border-slate-200/80 flex justify-between items-center">
@@ -225,25 +272,21 @@
                 
                 <!-- Data Sources Sub-Cards Grid -->
                 <div class="space-y-3">
-                    <!-- Card 1 -->
                     <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
                         <h6 class="font-bold text-slate-800 text-xs">Xobdo Org Corpus</h6>
                         <p class="text-[11px] text-slate-500 leading-relaxed">Acknowledge the immense foundation set by the volunteer network at Xobdo for establishing pioneering open digital Assamese lexical pairings.</p>
                     </div>
 
-                    <!-- Card 2 -->
                     <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
                         <h6 class="font-bold text-slate-800 text-xs">Indic NLP & Open Corpora</h6>
                         <p class="text-[11px] text-slate-500 leading-relaxed">Linguistic structuring patterns, machine-transliteration anchors, and baseline token verification powered by open-source Indic text repositories.</p>
                     </div>
 
-                    <!-- Card 3 -->
                     <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
                         <h6 class="font-bold text-slate-800 text-xs">Princeton WordNet & dwyl Corpus</h6>
                         <p class="text-[11px] text-slate-500 leading-relaxed">Advanced structural vocabulary extensions, long-form elite English terminology, and semantic anchor points harvested via open academic lexical indices.</p>
                     </div>
 
-                    <!-- Card 4 -->
                     <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
                         <h6 class="font-bold text-slate-800 text-xs">AI Augmentation</h6>
                         <p class="text-[11px] text-slate-500 leading-relaxed">Deep conceptual sentence examples and cross-script grammatical definitions contextualized via Google Gemini Pro processing frameworks.</p>
@@ -262,7 +305,7 @@
         </div>
     </div>
 
-    <!-- FIXED WINDOW LAYOUT CONTAINER: COMPOSITE PWA INSTALL BANNER (PROPER VIEWPORT POSITIONING) -->
+    <!-- FIXED WINDOW LAYOUT CONTAINER: COMPOSITE PWA INSTALL BANNER -->
     <div id="pwa-install-banner" class="hidden fixed bottom-6 right-6 w-[calc(100%-3rem)] sm:w-96 bg-teal-950 text-white p-4 rounded-2xl shadow-2xl flex items-start gap-3 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
         <!-- Close Button -->
         <button id="pwa-close-btn" class="absolute top-2 right-3 text-slate-400 hover:text-white font-bold text-lg cursor-pointer transition-all active:scale-90" onclick="closePwaBanner()">&times;</button>

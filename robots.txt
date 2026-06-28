@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Welcoming search engine AI agents to crawl for citations
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# Optional: Block aggressive bots that train models but don't link back
+User-agent: CCBot
+Disallow: /
+
+User-agent: Anthropic-ai
+Disallow: /
+
+Sitemap: https://assamesedictionary.org/sitemap.xml

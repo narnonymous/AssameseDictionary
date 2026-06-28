@@ -20,7 +20,7 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-teal-100 selection:text-teal-900">
+<body class="min-h-screen flex flex-col antialiased selection:bg-teal-100 selection:text-teal-900 relative">
 
     <!-- HEADER / NAVIGATION -->
     <header class="bg-gradient-to-r from-teal-900 to-teal-950 text-white shadow-md sticky top-0 z-40">
@@ -44,7 +44,7 @@
     </header>
 
     <!-- CORE INTERFACE WRAPPER -->
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6">
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6 mb-24">
         
         <!-- SEARCH SEARCH HUB BAR -->
         <div class="relative">
@@ -262,9 +262,9 @@
         </div>
     </div>
 
-    <!-- COMPOSITE SYSTEM STACK DEVICE PWA BANNER CONTAINER -->
-    <div id="pwa-install-banner" class="hidden fixed bottom-6 right-6 w-[calc(100%-3rem)] sm:w-96 bg-teal-950 text-white p-4 rounded-2xl shadow-2xl flex items-start gap-3 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300 relative">
-        <!-- Close / Cancel Dismiss Button -->
+    <!-- FIXED WINDOW LAYOUT CONTAINER: COMPOSITE PWA INSTALL BANNER (PROPER VIEWPORT POSITIONING) -->
+    <div id="pwa-install-banner" class="hidden fixed bottom-6 right-6 w-[calc(100%-3rem)] sm:w-96 bg-teal-950 text-white p-4 rounded-2xl shadow-2xl flex items-start gap-3 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <!-- Close Button -->
         <button id="pwa-close-btn" class="absolute top-2 right-3 text-slate-400 hover:text-white font-bold text-lg cursor-pointer transition-all active:scale-90" onclick="closePwaBanner()">&times;</button>
         
         <div class="flex-1 pr-5">

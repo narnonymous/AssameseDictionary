@@ -1,5 +1,4 @@
 // === CONFIGURATION ===
-// Replace this with your actual Cloudflare Worker live deployment endpoint URL (NO trailing slash)
 const EDGE_API_URL = "https://dictionary-edge-api.naruttamboruah.workers.dev";
 // =====================
 
@@ -35,8 +34,23 @@ const correctionFeedback = document.getElementById('correction-feedback');
 
 // Application Bootstrap initialization
 window.onload = () => {
-    navigateToHomeScreenHome(); 
+    // 1. Initial State Initialization
     loadSavedBookmarksFromStorage(); 
+    
+    // 2. STRATEGY 1 URL DEEPLINK ROUTER: Check if visitor loaded a specific entry
+    const urlParams = new URLSearchParams(window.location.search);
+    const wordParam = urlParams.get('word');
+
+    if (wordParam) {
+        const cleanWord = decodeURIComponent(wordParam).trim().toLowerCase();
+        if (searchInput) searchInput.value = cleanWord;
+        closeCorrectionForm();
+        hideAutocompleteDropdown();
+        fetchDetailedDefinition(cleanWord);
+    } else {
+        // Default homepage reset routing state
+        navigateToHomeScreenHome(); 
+    }
 };
 
 // ==========================================
@@ -48,6 +62,12 @@ function navigateToHomeScreenHome() {
     closeCorrectionForm(); 
     resetDefinitionView(); 
     fetchWordOfTheDay();   
+    
+    // Clean browser history string query if user explicitly wipes screen
+    if (window.location.search) {
+        const clearUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({ path: clearUrl }, '', clearUrl);
+    }
 }
 
 // ==========================================
@@ -89,6 +109,7 @@ async function fetchWordOfTheDay() {
         document.getElementById('wotd-action-btn').onclick = () => {
             displayDefinition(dailyWord); 
             if (searchInput) searchInput.value = dailyWord.word; 
+            updateBrowserHistoryUrl(dailyWord.word);
         };
 
         if (loader) loader.classList.add('hidden'); 
@@ -172,13 +193,15 @@ function renderAutocompleteDropdown(data) {
 }
 
 async function fetchDetailedDefinition(targetWord) {
+    const cleanWord = targetWord.trim().toLowerCase();
     try {
-        const response = await fetch(`${EDGE_API_URL}/word/${encodeURIComponent(targetWord.trim().toLowerCase())}`);
+        const response = await fetch(`${EDGE_API_URL}/word/${encodeURIComponent(cleanWord)}`);
         if (!response.ok) throw new Error("Detailed lookup failed");
         
         const fullData = await response.json();
         fullData.word = targetWord; 
         displayDefinition(fullData);
+        updateBrowserHistoryUrl(cleanWord);
     } catch(err) {
         console.error("Detailed definition retrieval error:", err);
     }
@@ -211,6 +234,12 @@ document.addEventListener('click', function(event) {
         hideAutocompleteDropdown(); 
     }
 });
+
+// Helper utility to alter url context state dynamically for search crawler entry index maps
+function updateBrowserHistoryUrl(wordKey) {
+    const nextUrlPath = `${window.location.protocol}//${window.location.host}${window.location.pathname}?word=${encodeURIComponent(wordKey)}`;
+    window.history.pushState({ path: nextUrlPath }, '', nextUrlPath);
+}
 
 // ==========================================
 // MODULE 3: DEFINITION DISPLAY LOGIC
@@ -265,6 +294,7 @@ function displayDefinition(item) {
                                 const data = await response.json();
                                 data.word = targetTerm; 
                                 displayDefinition(data); 
+                                updateBrowserHistoryUrl(targetTerm);
                             } else {
                                 fetchWordsFromCloud(targetTerm); 
                             }
@@ -304,7 +334,6 @@ function loadSavedBookmarksFromStorage() {
     renderFavoritesListUI(); 
 }
 
-// Update the stored configuration mapping structure
 function updateBookmarksStorage() {
     localStorage.setItem('asomiya_lexicon_bookmarks', JSON.stringify(savedBookmarksArray)); 
     renderFavoritesListUI(); 
@@ -334,6 +363,7 @@ function renderFavoritesListUI() {
         labelBtn.onclick = () => {
             displayDefinition(item); 
             searchInput.value = item.word; 
+            updateBrowserHistoryUrl(item.word.toLowerCase());
             toggleFavoritesSidebar(); 
         };
 

@@ -4,11 +4,11 @@ const EDGE_API_URL = "https://dictionary-edge-api.naruttamboruah.workers.dev";
 // =====================
 
 // State Monitoring Variables
-let activeSelectedWordObj = null; // tracks the active dictionary row object
-let savedBookmarksArray = []; // collection array for local bookmarks
-let typingTimer = null; // debounce interval anchor
-let currentDropdownMatches = []; // holds latest live matches array
-const localSearchCache = new Map(); // Lightning-fast in-memory lookup cache
+let activeSelectedWordObj = null; 
+let savedBookmarksArray = []; 
+let typingTimer = null; 
+let currentDropdownMatches = []; 
+const localSearchCache = new Map(); 
 
 // DOM Elements
 const searchInput = document.getElementById('search-input'); 
@@ -304,6 +304,7 @@ function loadSavedBookmarksFromStorage() {
     renderFavoritesListUI(); 
 }
 
+// Update the stored configuration mapping structure
 function updateBookmarksStorage() {
     localStorage.setItem('asomiya_lexicon_bookmarks', JSON.stringify(savedBookmarksArray)); 
     renderFavoritesListUI(); 
@@ -381,7 +382,6 @@ function updateBookmarkStarUI(isFav) {
     }
 }
 
-// Clear all bookmark selections permanently
 function clearAllSavedFavorites() {
     if (confirm("Clear all bookmarked items?")) {
         savedBookmarksArray = []; 

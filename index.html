@@ -200,23 +200,70 @@
     </div>
 
     <!-- SYSTEM MODULE LAYOUT CONTAINER: ACKNOWLEDGMENTS / SYSTEM INFO CREDITS -->
-    <div id="credits-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4 z-50" onclick="toggleCreditsModal()">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center border border-slate-100 shadow-2xl flex flex-col items-center gap-3" onclick="event.stopPropagation()">
-            <div class="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center text-xl shadow-2xs">💻</div>
-            <h4 class="font-bold text-slate-900 text-base font-as">অসমীয়া ডিজিটেল লেক্সিকন</h4>
+    <div id="credits-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs items-center justify-center p-4 z-50" onclick="toggleCreditsModal()">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 border border-slate-100 shadow-2xl flex flex-col gap-4 animate-in zoom-in-95 duration-150 max-h-[85vh]" onclick="event.stopPropagation()">
             
-            <div class="text-xs text-slate-600 leading-relaxed space-y-1">
-                <p>Developed and Managed by <span class="font-bold text-teal-950">Naruttam Boruah</span></p>
-                <p class="text-[11px] text-slate-400 italic">Engineered using serverless Cloudflare Workers and globally distributed KV edge-computing architecture.</p>
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h4 class="font-bold text-slate-900 text-base flex items-center gap-2">📜 Open Data & Credits</h4>
+                <button onclick="toggleCreditsModal()" class="text-slate-400 hover:text-slate-600 font-medium text-sm transition-all cursor-pointer flex items-center gap-1">✕ Close</button>
             </div>
 
-            <div class="text-[10px] bg-slate-100 px-3 py-1 rounded-md font-bold text-slate-500 font-en uppercase tracking-wider mt-1">Platform Version 2.4.0 Edge</div>
-            <button onclick="toggleCreditsModal()" class="mt-2 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2 rounded-xl cursor-pointer transition-all">Close System Profile</button>
+            <!-- Scrollable Container Block -->
+            <div class="overflow-y-auto space-y-4 pr-1 text-slate-600 text-sm leading-relaxed">
+                
+                <!-- Core Platform Info Profile Section -->
+                <div class="flex flex-col items-center text-center pb-2 border-b border-slate-100/60">
+                    <div class="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center text-xl shadow-3xs mb-2">💻</div>
+                    <h5 class="font-bold text-slate-900 text-base font-as">অসমীয়া ডিজিটেল লেক্সিকন</h5>
+                    <p class="text-xs text-slate-600 mt-1">Developed and Managed by <span class="font-bold text-teal-950">Naruttam Boruah</span></p>
+                    <p class="text-[11px] text-slate-400 italic mt-0.5 max-w-xs">Engineered using serverless Cloudflare Workers and globally distributed KV edge-computing architecture.</p>
+                </div>
+
+                <!-- Content Explainer Paragraph -->
+                <p class="text-xs text-slate-500 leading-relaxed">This dictionary engine is built on a foundation of community-driven collaboration and open linguistic resources. We express our deepest gratitude to the platforms and datasets that make digital representation of the Assamese language viable:</p>
+                
+                <!-- Data Sources Sub-Cards Grid -->
+                <div class="space-y-3">
+                    <!-- Card 1 -->
+                    <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
+                        <h6 class="font-bold text-slate-800 text-xs">Xobdo Org Corpus</h6>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">Acknowledge the immense foundation set by the volunteer network at Xobdo for establishing pioneering open digital Assamese lexical pairings.</p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
+                        <h6 class="font-bold text-slate-800 text-xs">Indic NLP & Open Corpora</h6>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">Linguistic structuring patterns, machine-transliteration anchors, and baseline token verification powered by open-source Indic text repositories.</p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
+                        <h6 class="font-bold text-slate-800 text-xs">Princeton WordNet & dwyl Corpus</h6>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">Advanced structural vocabulary extensions, long-form elite English terminology, and semantic anchor points harvested via open academic lexical indices.</p>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
+                        <h6 class="font-bold text-slate-800 text-xs">AI Augmentation</h6>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">Deep conceptual sentence examples and cross-script grammatical definitions contextualized via Google Gemini Pro processing frameworks.</p>
+                    </div>
+                </div>
+
+                <!-- Closing Metric Disclaimer Text -->
+                <p class="text-[11px] text-slate-400 italic leading-relaxed pt-1">All data corrections and reporting logs processed by users directly enrich this localized index copy under community-friendly fair-use metrics.</p>
+            </div>
+
+            <!-- Modal Footer Button Trigger Block -->
+            <div class="border-t border-slate-100 pt-3 mt-auto flex flex-col items-center gap-2">
+                <div class="text-[10px] bg-slate-100 px-3 py-1 rounded-md font-bold text-slate-500 font-en uppercase tracking-wider">Platform Version 2.4.0 Edge</div>
+                <button onclick="toggleCreditsModal()" class="w-full bg-slate-950 hover:bg-slate-900 text-white font-semibold text-sm py-2.5 rounded-xl transition-all cursor-pointer shadow-xs text-center">Close System Profile</button>
+            </div>
         </div>
     </div>
 
     <!-- COMPOSITE SYSTEM STACK DEVICE PWA BANNER CONTAINER -->
-    <div id="pwa-install-banner" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:max-w-md bg-teal-950 text-white p-4 rounded-2xl shadow-xl flex items-start gap-3 z-50 transition-all duration-300 relative">
+    <div id="pwa-install-banner" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-4 w-[calc(100%-2rem)] md:w-full md:max-w-md bg-teal-950 text-white p-4 rounded-2xl shadow-xl flex items-start gap-3 z-50 transition-all duration-300 relative animate-in fade-in slide-in-from-bottom-4">
         <!-- Close / Cancel Dismiss Button -->
         <button id="pwa-close-btn" class="absolute top-2 right-3 text-slate-400 hover:text-white font-bold text-lg cursor-pointer transition-all active:scale-90" onclick="closePwaBanner()">&times;</button>
         

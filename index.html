@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="as">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অসমীয়া অভিধান | Assamese Dictionary</title>
+    
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+        .font-as { font-family: 'Noto Serif Bengali', serif; }
+        .font-en { font-family: 'Inter', sans-serif; }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-en antialiased text-slate-800 relative overflow-x-hidden">
+
+    <header class="bg-teal-800 text-white shadow-md w-full">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4">
+            
+            <div class="flex items-center gap-3.5 flex-col sm:flex-row">
+                <button onclick="navigateToHomeScreenHome()" class="cursor-pointer active:scale-95 transition-transform" title="Return to Home">
+                    <img src="logo.svg" alt="অসমীয়া অভিধান Logo" class="w-12 h-12 rounded-xl shadow-md shrink-0 select-none">
+                </button>
+                
+                <div class="space-y-0.5">
+                    <h1 class="text-2xl font-bold font-as tracking-wide">অসমীয়া অভিধান</h1>
+                    <p class="text-[10px] sm:text-xs text-teal-200 opacity-90 font-en tracking-wide uppercase">Unified Assamese ⇄ English AI Lexicon</p>
+                </div>
+            </div>
+
+            <button onclick="toggleFavoritesSidebar()" class="px-4 py-2 sm:px-3 sm:py-1.5 bg-teal-900 hover:bg-teal-950 text-teal-100 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border border-teal-700/50 cursor-pointer shadow-2xs transition-all w-full sm:w-auto">
+                ⭐ <span id="fav-counter-label">Favorites (0)</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+        
+        <div id="pwa-install-banner" class="hidden mb-6 bg-gradient-to-r from-teal-700 to-teal-900 text-white p-4 rounded-2xl shadow-md flex items-center justify-between gap-4 border border-teal-600/30 transition-all">
+            <div class="flex items-center gap-3 text-left">
+                <div class="text-2xl select-none">📱</div>
+                <div class="space-y-0.5">
+                    <h4 class="text-sm font-bold tracking-wide">Install Asomiya Dictionary App</h4>
+                    <p class="text-[11px] text-teal-200 opacity-90">Access full meanings instantly from your phone home screen!</p>
+                </div>
+            </div>
+            <button onclick="triggerNativePWAInstallation()" class="px-3.5 py-1.5 bg-white text-teal-950 font-bold text-xs rounded-xl hover:bg-teal-50 active:scale-95 transition-all shadow-xs cursor-pointer shrink-0">
+                Install Now
+            </button>
+        </div>
+
+        <div class="relative mb-6 z-50">
+            <div class="bg-white rounded-2xl shadow-xs border border-slate-200/60 p-4 sm:p-5 transition-all focus-within:shadow-md focus-within:border-teal-500/50">
+                <div class="relative">
+                    <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search words... / শব্দ সন্ধান কৰক..." 
+                           class="w-full pl-5 pr-12 py-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white text-base sm:text-lg transition-all font-as text-slate-900">
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.603 10.603Z" />
+                        </svg>
+                    </div>
+                </div>
+                <p id="search-help" class="text-[11px] sm:text-xs text-slate-400 mt-2 font-en px-1">
+                    Search seamlessly across over 250,000+ localized terms, meanings, and comprehensive examples instantly. 🚀
+                </p>
+            </div>
+
+            <div id="word-sidebar-container" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-200 p-3 flex-col z-[100] max-h-[320px]">
+                <div class="flex items-center justify-between mb-2 px-2 border-b border-slate-100 pb-1.5">
+                    <span id="dropdown-status-label" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Matches Found</span>
+                </div>
+                <div id="word-sidebar-list" class="overflow-y-auto flex-1 space-y-1 pr-1 custom-scrollbar max-h-[250px]">
+                </div>
+            </div>
+        </div>
+
+        <div id="definition-container" class="w-full bg-white rounded-2xl shadow-xs border border-slate-200/60 p-5 sm:p-7 min-h-[450px] flex flex-col justify-between scroll-mt-20 relative z-10">
+            <div class="w-full">
+                
+                <div id="empty-state" class="text-center py-10 sm:py-14 text-slate-500 block">
+                    <div class="inline-block bg-teal-50 text-teal-800 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-teal-100 mb-4">
+                        💡 Word of the Day / আজিৰ শব্দ
+                    </div>
+                    <div id="wotd-loader" class="text-xs text-slate-400 py-6">Loading daily discovery module...</div>
+                    
+                    <div id="wotd-content" class="hidden max-w-md mx-auto bg-slate-50 border border-slate-200 p-5 rounded-2xl text-left shadow-2xs">
+                        <div class="flex justify-between items-baseline mb-2">
+                            <h3 id="wotd-word" class="text-2xl font-bold text-slate-900 font-as">...</h3>
+                            <span id="wotd-pos" class="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded uppercase">Word</span>
+                        </div>
+                        <p id="wotd-meaning" class="text-sm font-as text-slate-700 leading-relaxed mb-3 border-l-2 border-teal-600 pl-2">...</p>
+                        <button id="wotd-action-btn" class="w-full py-2 bg-white hover:bg-teal-50 text-teal-800 text-xs font-semibold rounded-xl border border-slate-200 hover:border-teal-300 transition-all cursor-pointer shadow-3xs">
+                            Explore Full Definition →
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-6 max-w-xs mx-auto">Or simply begin typing in the box above to explore alternatives instantaneously.</p>
+                </div>
+
+                <div id="meaning-content" class="hidden">
+                    
+                    <div class="border-b border-slate-100 pb-4 mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
+                        <div class="space-y-2 w-full sm:w-auto">
+                            <div class="flex items-center gap-3 flex-wrap justify-start">
+                                <h2 id="view-word" class="text-3xl font-bold text-slate-950 font-as tracking-wide">...</h2>
+                                
+                                <button id="bookmark-toggle-btn" onclick="toggleActiveBookmarkState()" class="p-2 bg-slate-50 hover:bg-amber-50 text-slate-400 hover:text-amber-500 rounded-xl border border-slate-200/60 shadow-3xs cursor-pointer transition-all active:scale-90" title="Bookmark Word">
+                                    ⭐
+                                </button>
+
+                                <span id="view-transliteration" class="text-xs font-semibold bg-teal-50 text-teal-800 border border-teal-100 px-2.5 py-0.5 rounded-lg tracking-wide hidden"></span>
+                            </div>
+                            <span id="view-type" class="inline-block bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider border border-slate-200/50">Word</span>
+                        </div>
+                        <button id="copy-toast-btn" onclick="copyWordToClipboard()" class="w-full sm:w-auto px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-teal-700 bg-slate-50 hover:bg-teal-50/80 border border-slate-200 hover:border-teal-300 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs">
+                            📋 Copy Word
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-5 text-left">
+                        <div>
+                            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 font-en">প্ৰতিশব্দ / Synonyms</h4>
+                            <div id="view-meaning" class="min-h-[40px]">...</div>
+                        </div>
+
+                        <div id="ai-definitions" class="grid grid-cols-1 gap-4 bg-slate-50/70 p-4 rounded-2xl border border-slate-200/60 shadow-2xs">
+                            <div class="space-y-1">
+                                <h4 class="text-[10px] font-bold text-teal-800 uppercase tracking-wider font-as flex items-center gap-1">
+                                    🔹  অসমীয়া সংজ্ঞা (Assamese Definition)
+                                </h4>
+                                <p id="view-def-assamese" class="text-slate-800 font-as text-base leading-relaxed pl-4">...</p>
+                            </div>
+                            <div class="border-t border-slate-200/50 my-1"></div>
+                            <div class="space-y-1">
+                                <h4 class="text-[10px] font-bold text-teal-800 uppercase tracking-wider font-en flex items-center gap-1">
+                                    🔹  English Definition
+                                </h4>
+                                <p id="view-def-english" class="text-slate-600 font-en text-sm leading-relaxed pl-4">...</p>
+                            </div>
+                        </div>
+
+                        <div id="example-box" class="hidden space-y-1.5">
+                            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-en">উদাহৰণ / Context Usage Example</h4>
+                            <div class="bg-gradient-to-r from-teal-50/40 to-slate-50 p-4 rounded-2xl italic border-l-4 border-teal-600 shadow-2xs">
+                                <p id="view-example" class="text-slate-700 text-sm sm:text-base font-as leading-relaxed m-0"></p>
+                            </div>
+                        </div>
+
+                        <div class="text-right pt-2">
+                            <button onclick="openCorrectionForm()" class="text-xs text-slate-400 hover:text-red-500 font-medium cursor-pointer inline-flex items-center gap-1 transition-colors">
+                                ⚠️ ভুল প্ৰতিশব্দ বা সংজ্ঞা দেখা পাইছে? (Report Issue)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center text-[11px] text-slate-400 pt-6 mt-8 border-t border-slate-100 font-en tracking-wide">
+                Asomiya AI Lexicon • Smart Definitions in Script & Translation
+                <br>
+                <button onclick="toggleCreditsModal()" class="mt-2 text-teal-600 hover:text-teal-800 hover:underline cursor-pointer font-semibold bg-transparent border-none">
+                    📜 Open Data & Credits Attribution
+                </button>
+            </div>
+
+            <div id="correction-drawer" class="hidden absolute inset-0 bg-white rounded-2xl p-5 sm:p-7 flex-col justify-between z-30">
+                <div class="text-left">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                        <h3 class="text-sm font-bold text-slate-800 font-as flex items-center gap-1.5">
+                            📝 সংশোধনৰ পৰামৰ্শ (Suggest Correction)
+                        </h3>
+                        <button onclick="closeCorrectionForm()" class="text-slate-400 hover:text-slate-600 text-sm p-1 cursor-pointer">✕ Close</button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Target Term</label>
+                            <input type="text" id="correction-word-display" disabled class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-bold font-as">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">What is wrong? / সমস্যাৰ প্ৰকাৰ</label>
+                            <select id="correction-type" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-600">
+                                <option value="Wrong Meaning / Synonyms">ভুল অৰ্থ বা প্ৰতিশব্দ (Wrong Meaning/Synonyms)</option>
+                                <option value="Wrong Grammar Tag">ভুল ব্যাকৰণ শ্ৰেণী (Wrong Parts of Speech Tag)</option>
+                                <option value="Spelling Error">বানান ভুল (Spelling/Transliteration Error)</option>
+                                <option value="Inaccurate AI Definition">ভুল সংজ্ঞা বাক্য (Inaccurate AI Definition)</option>
+                                <option value="Other">অন্যান্য সমস্যা (Other Issue)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Your Suggestion / শুদ্ধ ৰূপটো আৰু মন্তব্য</label>
+                            <textarea id="correction-feedback" rows="3" placeholder="Provide the correct meaning, spelling or translation details here..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-600 font-as"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex gap-2">
+                    <button onclick="closeCorrectionForm()" class="flex-1 py-2.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl cursor-pointer transition-colors">Cancel</button>
+                    <button onclick="submitCorrectionToCloud()" class="flex-1 py-2.5 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 rounded-xl cursor-pointer transition-colors shadow-2xs">Submit Correction</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="favorites-sidebar" class="fixed top-0 right-0 h-full w-[280px] sm:w-[320px] bg-white shadow-2xl border-l border-slate-200 z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-5 flex flex-col justify-between">
+        <div class="flex-1 flex flex-col overflow-hidden text-left">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">⭐ Saved Bookmarks</h3>
+                <button onclick="toggleFavoritesSidebar()" class="text-slate-400 hover:text-slate-600 text-xs p-1 cursor-pointer">✕ Close</button>
+            </div>
+            
+            <div id="favorites-scroll-list" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+            </div>
+        </div>
+        <div class="pt-4 border-t border-slate-100 text-center">
+            <button onclick="clearAllSavedFavorites()" class="w-full py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-xl border border-red-100 transition-colors cursor-pointer">
+                🗑️ Clear All Bookmarks
+            </button>
+        </div>
+    </div>
+
+    <div id="credits-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[200] items-center justify-center p-4 transition-all">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 sm:p-7 max-w-md w-full text-left relative flex flex-col max-h-[85vh]">
+            
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                    📜 Open Data & Credits
+                </h3>
+                <button onclick="toggleCreditsModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1 cursor-pointer">✕ Close</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <p>
+                    This dictionary engine is built on a foundation of community-driven collaboration and open linguistic resources. We express our deepest gratitude to the platforms and datasets that make digital representation of the Assamese language viable:
+                </p>
+                
+                <div class="space-y-3">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <strong class="text-slate-800 block mb-0.5">Xobdo Org Corpus</strong>
+                        Acknowledge the immense foundation set by the volunteer network at Xobdo for establishing pioneering open digital Assamese lexical pairings.
+                    </div>
+                    
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <strong class="text-slate-800 block mb-0.5">Indic NLP & Open Corpora</strong>
+                        Linguistic structuring patterns, machine-transliteration anchors, and baseline token verification powered by open-source Indic text repositories.
+                    </div>
+
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <strong class="text-slate-800 block mb-0.5">Princeton WordNet & dwyl Corpus</strong>
+                        Advanced structural vocabulary extensions, long-form elite English terminology, and semantic anchor points harvested via open academic lexical indices.
+                    </div>
+
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <strong class="text-slate-800 block mb-0.5">AI Augmentation</strong>
+                        Deep conceptual sentence examples and cross-script grammatical definitions contextualized via Google Gemini Pro processing frameworks.
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-slate-400 italic">
+                    All data corrections and reporting logs processed by users directly enrich this localized index copy under community-friendly fair-use metrics.
+                </p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 mt-4">
+                <button onclick="toggleCreditsModal()" class="w-full py-2.5 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 rounded-xl cursor-pointer transition-colors shadow-2xs">
+                    Understood
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sidebar-overlay" onclick="toggleFavoritesSidebar()" class="hidden fixed inset-0 bg-slate-900/20 backdrop-blur-xs z-40 transition-all"></div>
+
+    <script src="app.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('PWA Service Worker registered successfully!'))
+                    .catch(err => console.log('Service Worker registration failed: ', err));
+            });
+        }
+    </script>
+</body>
+</html>

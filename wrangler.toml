@@ -1,0 +1,13 @@
+name = "dictionary-edge-api"
+
+main = "src/index.js"
+
+compatibility_date = "2026-06-28"
+
+
+
+[[kv_namespaces]]
+
+binding = "DICTIONARY_KV"
+
+id = "3e60b15b3be04875b1db17afd2515b85"

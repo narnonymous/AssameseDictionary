@@ -1,0 +1,40 @@
+{
+  "name": "অসমীয়া অভিধান",
+  "short_name": "অভিধান",
+  "description": "Unified Assamese ⇄ English AI Lexicon",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#042f2e",
+  "theme_color": "#115e59",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "logo.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Assamese Dictionary Mobile View"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Assamese Dictionary Desktop View"
+    }
+  ]
+}

@@ -8,6 +8,11 @@ let savedBookmarksArray = [];
 let typingTimer = null; 
 let currentDropdownMatches = []; 
 const localSearchCache = new Map(); 
+let deferredPWAInstallPrompt = null; 
+
+// PWA Persistent Storage Flags
+const PWA_DISMISS_KEY = "pwa_banner_dismissed_until";
+const SNOOZE_DAYS = 7; 
 
 // DOM Elements
 const searchInput = document.getElementById('search-input'); 
@@ -174,7 +179,7 @@ function renderAutocompleteDropdown(data) {
     document.getElementById('dropdown-status-label').textContent = `Matches Found (${totalCount})`; 
 
     if (totalCount === 0) {
-        wordSidebarList.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center italic">কোনো শব্দ পোৱা নগ’ল (No results found).</p>`; 
+        wordSidebarList.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center italic">কোনো শব্দ পোৱা নগ’ল (No results found).</p>`; 
         return;
     }
 
@@ -349,7 +354,7 @@ function renderFavoritesListUI() {
     scrollList.innerHTML = ''; 
 
     if (savedBookmarksArray.length === 0) {
-        scrollList.innerHTML = `<p class="text-xs text-slate-400 py-8 text-center italic">No bookmarked terms saved.</p>`; 
+        scrollList.innerHTML = `<p class="text-xs text-slate-500 py-8 text-center italic">No bookmarked terms saved.</p>`; 
         return;
     }
 
@@ -408,7 +413,7 @@ function updateBookmarkStarUI(isFav) {
     if (isFav) {
         starBtn.className = "p-2 bg-amber-50 text-amber-500 rounded-xl border border-amber-200 shadow-3xs cursor-pointer transition-all"; 
     } else {
-        starBtn.className = "p-2 bg-slate-50 hover:bg-amber-50 text-slate-400 hover:text-amber-500 rounded-xl border border-slate-200/60 shadow-3xs cursor-pointer transition-all"; 
+        starBtn.className = "p-2 bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-xl border border-slate-300 shadow-3xs cursor-pointer transition-all"; 
     }
 }
 
@@ -516,8 +521,6 @@ function resetDefinitionView() {
 // ==========================================
 // MODULE 6: ADVANCED PWA INSTALL MANAGER
 // ==========================================
-let deferredPWAInstallPrompt = null; 
-
 const isIOSDevice = () => {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; 
 };
@@ -526,10 +529,21 @@ const isRunningStandalone = () => {
     return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true); 
 };
 
-window.addEventListener('DOMContentLoaded', () => {
+function checkPwaBannerVisibility() {
+    const dismissUntil = localStorage.getItem(PWA_DISMISS_KEY);
     const installBanner = document.getElementById('pwa-install-banner'); 
     
-    if (isIOSDevice() && !isRunningStandalone() && installBanner) {
+    if (!installBanner) return;
+
+    // If a snooze window timestamp exists and is in the future, enforce hidden state
+    if (dismissUntil && Date.now() < parseInt(dismissUntil, 10)) {
+        installBanner.classList.add('hidden');
+        installBanner.classList.remove('flex');
+        return;
+    }
+
+    // Otherwise show banner based on specific platform support profiles
+    if (isIOSDevice() && !isRunningStandalone()) {
         const bannerTitle = installBanner.querySelector('h4'); 
         const bannerDesc = installBanner.querySelector('p'); 
         const bannerBtn = installBanner.querySelector('button'); 
@@ -543,21 +557,22 @@ window.addEventListener('DOMContentLoaded', () => {
                 alert("To install on iOS:\n\n1. Click the 'Share' button at the bottom of Safari (the square box with an up arrow).\n2. Scroll down the menu options.\n3. Tap 'Add to Home Screen'."); 
             };
         }
-        
+        installBanner.classList.remove('hidden'); 
+        installBanner.classList.add('flex'); 
+    } else if (deferredPWAInstallPrompt) {
         installBanner.classList.remove('hidden'); 
         installBanner.classList.add('flex'); 
     }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    checkPwaBannerVisibility();
 });
 
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault(); 
     deferredPWAInstallPrompt = e; 
-    
-    const installBanner = document.getElementById('pwa-install-banner'); 
-    if (installBanner && !isIOSDevice()) {
-        installBanner.classList.remove('hidden'); 
-        installBanner.classList.add('flex'); 
-    }
+    checkPwaBannerVisibility();
 });
 
 async function triggerNativePWAInstallation() {
@@ -567,12 +582,7 @@ async function triggerNativePWAInstallation() {
     const { outcome } = await deferredPWAInstallPrompt.userChoice; 
     
     deferredPWAInstallPrompt = null; 
-    
-    const installBanner = document.getElementById('pwa-install-banner'); 
-    if (installBanner) {
-        installBanner.classList.add('hidden'); 
-        installBanner.classList.remove('flex'); 
-    }
+    closePwaBanner();
 }
 
 function closePwaBanner() {
@@ -581,6 +591,9 @@ function closePwaBanner() {
         installBanner.classList.add('hidden');
         installBanner.classList.remove('flex');
     }
+    // Calculate precise expiration epoch timestamp (7 days forward)
+    const expireTimestamp = Date.now() + (SNOOZE_DAYS * 24 * 60 * 60 * 1000);
+    localStorage.setItem(PWA_DISMISS_KEY, expireTimestamp);
 }
 
 window.addEventListener('appinstalled', () => {

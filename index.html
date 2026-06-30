@@ -65,19 +65,19 @@
     <!-- HEADER / NAVIGATION -->
     <header class="bg-gradient-to-r from-teal-900 to-teal-950 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 py-3.5 flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateToHomeScreenHome()">
-                <img src="logo.svg" alt="Logo" class="w-8 h-8 filter drop-shadow" onerror="this.src='logo.png'">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateToHomeScreenHome()" role="button" tabIndex="0" aria-label="Home">
+                <img src="logo.svg" alt="" class="w-8 h-8 filter drop-shadow" onerror="this.src='logo.png'">
                 <div>
                     <h1 class="text-lg font-bold tracking-tight font-as">অসমীয়া অভিধান</h1>
                     <p class="text-[10px] text-teal-300 tracking-wider uppercase font-medium">Assamese Digital Lexicon</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="toggleFavoritesSidebar()" class="p-2 bg-teal-800/50 hover:bg-teal-800 rounded-xl transition-all cursor-pointer text-sm font-medium flex items-center gap-1.5">
-                    ⭐ <span class="hidden sm:inline">Favorites</span>
+                <button onclick="toggleFavoritesSidebar()" class="p-2 bg-teal-800/50 hover:bg-teal-800 rounded-xl transition-all cursor-pointer text-sm font-medium flex items-center gap-1.5" aria-label="View Saved Favorites">
+                    <span aria-hidden="true">⭐</span> <span class="hidden sm:inline">Favorites</span>
                 </button>
-                <button onclick="toggleCreditsModal()" class="p-2 bg-teal-800/20 hover:bg-teal-800/40 rounded-xl transition-all cursor-pointer text-xs font-semibold text-teal-200">
-                    ℹ️
+                <button onclick="toggleCreditsModal()" class="p-2 bg-teal-800/20 hover:bg-teal-800/40 rounded-xl transition-all cursor-pointer text-sm font-semibold text-teal-200" aria-label="View System Credits and Info">
+                    <span aria-hidden="true">ℹ️</span>
                 </button>
             </div>
         </div>
@@ -88,50 +88,51 @@
         
         <!-- SEARCH HUB BAR -->
         <div class="relative">
-            <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-xs border border-slate-200/80 focus-within:border-teal-500 focus-within:ring-4 focus-within:ring-teal-50/50 transition-all">
-                <div class="flex items-center pl-2 text-slate-400 text-lg">🔍</div>
-                <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search word / ইয়াত শব্দটো লিখক..." class="w-full bg-transparent border-0 outline-hidden outline-none focus:outline-none focus:ring-0 py-2.5 px-1 text-slate-800 font-medium placeholder:text-slate-400 text-base font-as">
-                <button onclick="navigateToHomeScreenHome()" class="px-3 text-slate-400 hover:text-slate-600 font-bold transition-all text-xs cursor-pointer">Wipe</button>
+            <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-xs border border-slate-300 focus-within:border-teal-600 focus-within:ring-4 focus-within:ring-teal-50/50 transition-all">
+                <div class="flex items-center pl-2 text-slate-500 text-lg" aria-hidden="true">🔍</div>
+                <label for="search-input" class="sr-only">Search dictionary entries</label>
+                <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search word / ইয়াত শব্দটো লিখক..." class="w-full bg-transparent border-0 outline-hidden outline-none focus:outline-none focus:ring-0 py-2.5 px-1 text-slate-800 font-medium placeholder:text-slate-500 text-base font-as" aria-autocomplete="list" aria-controls="word-sidebar-list">
+                <button onclick="navigateToHomeScreenHome()" class="px-3 text-slate-500 hover:text-slate-700 font-bold transition-all text-xs cursor-pointer">Wipe</button>
             </div>
             
             <!-- AUTOCOMPLETE LIVE DROPDOWN PANEL -->
-            <div id="word-sidebar-container" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200/60 flex-col max-h-80 z-50 overflow-hidden">
+            <div id="word-sidebar-container" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200/60 flex-col max-h-80 z-50 overflow-hidden" role="region" aria-live="polite">
                 <div class="bg-slate-50/80 px-4 py-2 border-b border-slate-100 flex justify-between items-center">
-                    <span id="dropdown-status-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Matches Found (0)</span>
-                    <span class="text-[10px] text-teal-600 font-medium">Edge Vault Lookup</span>
+                    <span id="dropdown-status-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Matches Found (0)</span>
+                    <span class="text-[10px] text-teal-700 font-semibold">Edge Vault Lookup</span>
                 </div>
-                <div id="word-sidebar-list" class="overflow-y-auto p-1.5 space-y-0.5 divide-y divide-slate-50">
+                <div id="word-sidebar-list" class="overflow-y-auto p-1.5 space-y-0.5 divide-y divide-slate-50" role="listbox">
                     <!-- Dropdown matches inject dynamically here -->
                 </div>
             </div>
         </div>
 
         <!-- HERO CORE CANVAS INTERFACE -->
-        <div id="dictionary-display-core" class="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/60 flex-1 flex flex-col min-h-[360px] relative overflow-hidden">
+        <div id="dictionary-display-core" class="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/60 flex-1 flex flex-col min-h-[360px] relative overflow-hidden" aria-live="informative">
             
             <!-- HOMEPAGE COMPONENT: INITIAL EMPTY STATE & WORD OF THE DAY -->
             <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-6 gap-6">
                 <div class="max-w-sm flex flex-col items-center">
-                    <div class="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-2xl shadow-xs mb-3 text-teal-700 animate-bounce">📖</div>
+                    <div class="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-2xl shadow-xs mb-3 text-teal-800 animate-bounce" aria-hidden="true">📖</div>
                     <h3 class="text-slate-800 font-bold text-base font-as">শব্দ সন্ধান কৰক</h3>
-                    <p class="text-xs text-slate-400 mt-1 leading-relaxed px-4">Type any word into the search bar above to look up definitions instantly.</p>
+                    <p class="text-sm text-slate-500 mt-1 leading-relaxed px-4">Type any word into the search bar above to look up definitions instantly.</p>
                 </div>
 
                 <!-- WORD OF THE DAY CARD CONTAINER -->
                 <div class="w-full max-w-md bg-linear-to-b from-slate-50 to-slate-100/60 p-5 rounded-2xl border border-slate-200/50 relative overflow-hidden group">
-                    <div class="absolute -right-4 -bottom-4 text-slate-200/50 text-7xl font-bold font-as pointer-events-none select-none">শব্দ</div>
+                    <div class="absolute -right-4 -bottom-4 text-slate-200/30 text-7xl font-bold font-as pointer-events-none select-none" aria-hidden="true">শব্দ</div>
                     <div class="flex justify-center mb-3">
-                        <span class="bg-teal-50 text-teal-800 border border-teal-200/60 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                        <span class="bg-teal-50 text-teal-900 border border-teal-200/60 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
                             💡 Word of the Day / আজিৰ শব্দ
                         </span>
                     </div>
                     
-                    <div id="wotd-loader" class="py-6 text-xs text-slate-400 font-medium">Calculating daily token string indices...</div>
+                    <div id="wotd-loader" class="py-6 text-xs text-slate-500 font-medium">Calculating daily token string indices...</div>
                     
                     <div id="wotd-content" class="hidden flex flex-col items-center">
                         <h4 id="wotd-word" class="text-2xl font-bold text-teal-950 font-as tracking-wide">--</h4>
-                        <span id="wotd-pos" class="bg-slate-200/60 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide mt-1.5 font-en">WORD</span>
-                        <p id="wotd-meaning" class="text-slate-600 text-sm mt-3 font-as line-clamp-2 max-w-xs leading-relaxed">--</p>
+                        <span id="wotd-pos" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide mt-1.5 font-en">WORD</span>
+                        <p id="wotd-meaning" class="text-slate-700 text-sm mt-3 font-as line-clamp-2 max-w-xs leading-relaxed">--</p>
                         <button id="wotd-action-btn" class="mt-4 w-full bg-white hover:bg-teal-600 text-slate-700 hover:text-white font-semibold text-xs py-2 px-4 rounded-xl border border-slate-200 shadow-3xs transition-all duration-150 flex items-center justify-center gap-1 cursor-pointer">
                             Explore Full Definition ➔
                         </button>
@@ -147,25 +148,25 @@
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
                             <h2 id="view-word" class="text-2xl sm:text-3xl font-bold text-teal-950 tracking-wide font-as break-words max-w-full">--</h2>
-                            <span id="view-type" class="bg-teal-50 text-teal-800 border border-teal-100 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide font-en shrink-0">NOUN</span>
+                            <span id="view-type" class="bg-teal-50 text-teal-900 border border-teal-100 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide font-en shrink-0">NOUN</span>
                         </div>
-                        <p id="view-transliteration" class="text-xs text-slate-400 mt-1 italic font-en">--</p>
+                        <p id="view-transliteration" class="text-xs text-slate-500 mt-1 italic font-en">--</p>
                     </div>
                     
                     <!-- Action Buttons: Handled cleanly across flex wrapping layouts -->
                     <div class="flex items-center gap-2 mt-1 sm:mt-0 shrink-0 w-full sm:w-auto justify-start sm:justify-end">
-                        <button id="copy-toast-btn" onclick="copyWordToClipboard()" class="flex-1 sm:flex-initial p-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl border border-slate-200/60 shadow-3xs cursor-pointer text-xs font-semibold flex items-center justify-center gap-1.5 transition-all whitespace-nowrap">
-                            📋 Copy Word
+                        <button id="copy-toast-btn" onclick="copyWordToClipboard()" class="flex-1 sm:flex-initial p-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl border border-slate-300 shadow-3xs cursor-pointer text-xs font-semibold flex items-center justify-center gap-1.5 transition-all whitespace-nowrap">
+                            <span aria-hidden="true">📋</span> Copy Word
                         </button>
-                        <button id="bookmark-toggle-btn" onclick="toggleActiveBookmarkState()" class="p-2 px-3 bg-slate-50 hover:bg-amber-50 text-slate-400 hover:text-amber-500 rounded-xl border border-slate-200/60 shadow-3xs cursor-pointer transition-all flex items-center justify-center">
-                            ⭐
+                        <button id="bookmark-toggle-btn" onclick="toggleActiveBookmarkState()" class="p-2 px-3 bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-xl border border-slate-300 shadow-3xs cursor-pointer transition-all flex items-center justify-center" aria-label="Bookmark this word">
+                            <span aria-hidden="true">⭐</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- DETAILED SYNONYM GRID MAPPING -->
                 <div>
-                    <h5 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 font-en">Synonyms & Mappings</h5>
+                    <h5 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 font-en">Synonyms & Mappings</h5>
                     <div id="view-meaning" class="flex flex-wrap gap-1.5">
                         <!-- Dynamic keyword cross-links badges mount here -->
                     </div>
@@ -173,26 +174,26 @@
 
                 <!-- CORE TRANSLATIONS ROWS -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/40">
-                        <h6 class="text-[10px] font-bold text-teal-800 uppercase tracking-wider mb-1 font-as">অসমীয়া সংজ্ঞা (Assamese Definition)</h6>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/60">
+                        <h6 class="text-[10px] font-bold text-teal-900 uppercase tracking-wider mb-1 font-as">অসমীয়া সংজ্ঞা (Assamese Definition)</h6>
                         <p id="view-def-assamese" class="text-slate-800 text-sm leading-relaxed font-as font-medium">--</p>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/40">
-                        <h6 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 font-en">English Translation</h6>
-                        <p id="view-def-english" class="text-slate-700 text-sm leading-relaxed font-en">--</p>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/60">
+                        <h6 class="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1 font-en">English Translation</h6>
+                        <p id="view-def-english" class="text-slate-800 text-sm leading-relaxed font-en">--</p>
                     </div>
                 </div>
 
                 <!-- USAGE EXAMPLES ROW -->
                 <div id="example-box" class="bg-teal-50/40 border border-teal-100/60 rounded-2xl p-4">
-                    <h6 class="text-[10px] font-bold text-teal-900 uppercase tracking-wider mb-1 font-en">Context Usage Example</h6>
+                    <h6 class="text-[10px] font-bold text-teal-950 uppercase tracking-wider mb-1 font-en">Context Usage Example</h6>
                     <p id="view-example" class="text-teal-950 text-sm font-medium italic font-as">--</p>
                 </div>
 
                 <!-- CORRECTION LAUNCH TRIGGER FOOTER -->
-                <div class="mt-auto border-t border-slate-100 pt-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-400">
+                <div class="mt-auto border-t border-slate-100 pt-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500">
                     <span>Inaccurate entry mappings?</span>
-                    <button onclick="openCorrectionForm()" class="text-teal-600 font-bold hover:underline cursor-pointer">Report Translation Correction 🛠️</button>
+                    <button onclick="openCorrectionForm()" class="text-teal-700 font-bold hover:underline cursor-pointer">Report Translation Correction 🛠️</button>
                 </div>
             </div>
         </div>
@@ -200,10 +201,10 @@
 
     <!-- SLIDEOUT MODULE: FAVORITES / BOOKMARKS MANAGER -->
     <div id="sidebar-overlay" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 transition-all" onclick="toggleFavoritesSidebar()"></div>
-    <div id="favorites-sidebar" class="fixed top-0 right-0 bottom-0 w-80 bg-white shadow-2xl z-50 translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200">
+    <div id="favorites-sidebar" class="fixed top-0 right-0 bottom-0 w-80 bg-white shadow-2xl z-50 translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200" role="dialog" aria-labelledby="fav-counter-label" aria-modal="true">
         <div class="p-4 bg-slate-50 border-b border-slate-200/80 flex justify-between items-center">
             <h4 id="fav-counter-label" class="font-bold text-slate-800 text-sm">Favorites (0)</h4>
-            <button onclick="toggleFavoritesSidebar()" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">➔</button>
+            <button onclick="toggleFavoritesSidebar()" class="text-slate-500 hover:text-slate-700 font-bold text-lg cursor-pointer" aria-label="Close Sidebar">➔</button>
         </div>
         <div id="favorites-scroll-list" class="flex-1 overflow-y-auto p-4 space-y-2">
             <!-- Bookmarked rows output here -->
@@ -214,20 +215,20 @@
     </div>
 
     <!-- UTILITY MODAL CONTAINER MODULE: CORRECTION REPORT FLOATING DRAWER -->
-    <div id="correction-drawer" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs items-center justify-center p-4 z-50">
+    <div id="correction-drawer" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs items-center justify-center p-4 z-50" role="dialog" aria-labelledby="correction-header-title" aria-modal="true">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 flex flex-col gap-4 animate-in zoom-in-95 duration-150">
             <div class="flex justify-between items-center">
-                <h4 class="font-bold text-slate-900 text-base">Submit Correction Proposal</h4>
-                <button onclick="closeCorrectionForm()" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+                <h4 id="correction-header-title" class="font-bold text-slate-900 text-base">Submit Correction Proposal</h4>
+                <button onclick="closeCorrectionForm()" class="text-slate-500 hover:text-slate-700 font-bold text-lg cursor-pointer" aria-label="Close Form">×</button>
             </div>
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block font-semibold text-slate-500 mb-1">Target Dictionary Index</label>
+                    <label for="correction-word-display" class="block font-semibold text-slate-600 mb-1">Target Dictionary Index</label>
                     <input type="text" id="correction-word-display" readonly class="w-full bg-slate-50 p-2.5 rounded-xl font-bold font-as border border-slate-200 outline-hidden text-slate-700 cursor-not-allowed">
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-500 mb-1">Classification Error Scope</label>
-                    <select id="correction-type" class="w-full bg-white p-2.5 rounded-xl border border-slate-200 outline-hidden font-medium text-slate-700">
+                    <label for="correction-type" class="block font-semibold text-slate-600 mb-1">Classification Error Scope</label>
+                    <select id="correction-type" class="w-full bg-white p-2.5 rounded-xl border border-slate-300 outline-hidden font-medium text-slate-700">
                         <option value="typo">Typographical Orthography Misalignment</option>
                         <option value="meaning">Inaccurate Synonym/Meaning Map</option>
                         <option value="grammar">Incorrect Part of Speech Label</option>
@@ -235,8 +236,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-500 mb-1">Proposed Correction / Notes</label>
-                    <textarea id="correction-feedback" rows="3" placeholder="Describe the optimal translation formatting rules or provide recommendations..." class="w-full bg-white p-2.5 rounded-xl border border-slate-200 outline-hidden font-medium text-slate-800 placeholder:text-slate-400"></textarea>
+                    <label for="correction-feedback" class="block font-semibold text-slate-600 mb-1">Proposed Correction / Notes</label>
+                    <textarea id="correction-feedback" rows="3" placeholder="Describe the optimal translation formatting rules or provide recommendations..." class="w-full bg-white p-2.5 rounded-xl border border-slate-300 outline-hidden font-medium text-slate-800 placeholder:text-slate-500"></textarea>
                 </div>
             </div>
             <div class="flex gap-2 mt-2">
@@ -247,13 +248,13 @@
     </div>
 
     <!-- SYSTEM MODULE LAYOUT CONTAINER: ACKNOWLEDGMENTS / SYSTEM INFO CREDITS -->
-    <div id="credits-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs items-center justify-center p-4 z-50" onclick="toggleCreditsModal()">
+    <div id="credits-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs items-center justify-center p-4 z-50" onclick="toggleCreditsModal()" role="dialog" aria-labelledby="credits-header-title" aria-modal="true">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 border border-slate-100 shadow-2xl flex flex-col gap-4 animate-in zoom-in-95 duration-150 max-h-[85vh]" onclick="event.stopPropagation()">
             
             <!-- Modal Header -->
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h4 class="font-bold text-slate-900 text-base flex items-center gap-2">📜 Open Data & Platform Profile</h4>
-                <button onclick="toggleCreditsModal()" class="text-slate-400 hover:text-slate-600 font-medium text-sm transition-all cursor-pointer flex items-center gap-1">✕ Close</button>
+                <h4 id="credits-header-title" class="font-bold text-slate-900 text-base flex items-center gap-2">📜 Open Data & Platform Profile</h4>
+                <button onclick="toggleCreditsModal()" class="text-slate-500 hover:text-slate-700 font-medium text-sm transition-all cursor-pointer flex items-center gap-1" aria-label="Close Modal">✕ Close</button>
             </div>
 
             <!-- Scrollable Container Block -->
@@ -261,45 +262,45 @@
                 
                 <!-- Core Platform Info Profile Section -->
                 <div class="flex flex-col items-center text-center pb-2 border-b border-slate-100/60">
-                    <div class="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center text-xl shadow-3xs mb-2">💻</div>
+                    <div class="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center text-xl shadow-3xs mb-2" aria-hidden="true">💻</div>
                     <h5 class="font-bold text-slate-900 text-base font-as">অসমীয়া ডিজিটেল লেক্সিকন</h5>
                     <p class="text-xs text-slate-600 mt-1">Developed and Managed by <span class="font-bold text-teal-950">Naruttam Boruah</span></p>
-                    <p class="text-[11px] text-slate-400 italic mt-0.5 max-w-xs">A fast, modern digital lexicon designed for seamless offline search and cross-lingual dictionary access.</p>
+                    <p class="text-[11px] text-slate-500 italic mt-0.5 max-w-xs">A fast, modern digital lexicon designed for seamless offline search and cross-lingual dictionary access.</p>
                 </div>
 
                 <!-- Balanced Acknowledgment Body -->
-                <p class="text-xs text-slate-500 leading-relaxed">
+                <p class="text-xs text-slate-600 leading-relaxed">
                     This modern lexicon interface is established via programmatic dataset compilation, building upon historical foundations of language reference indexes to bring the Assamese language into a highly responsive digital utility format. 
                 </p>
                 
                 <div class="space-y-3">
                     <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
                         <h6 class="font-bold text-slate-800 text-xs">Lexical Corpora & Word Indexes</h6>
-                        <p class="text-[11px] text-slate-500 leading-relaxed">Acknowledge the fundamental groundwork laid by global open vocabulary indexes, standard reference dictionaries, and public word corpora that compile essential baseline token mappings.</p>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">Acknowledge the fundamental groundwork laid by global open vocabulary indexes, standard reference dictionaries, and public word corpora that compile essential baseline token mappings.</p>
                     </div>
 
                     <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50 space-y-0.5">
                         <h6 class="font-bold text-slate-800 text-xs">Algorithmic Augmentation Layer</h6>
-                        <p class="text-[11px] text-slate-500 leading-relaxed">Detailed definition structures, phonetic script transliterations, and context usage models have been parsed, cross-validated, and structured programmatically via modern automated linguistic synthesis pipelines.</p>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">Detailed definition structures, phonetic script transliterations, and context usage models have been parsed, cross-validated, and structured programmatically via modern automated linguistic synthesis pipelines.</p>
                     </div>
                 </div>
 
                 <!-- Closing Metric Disclaimer Text -->
-                <p class="text-[11px] text-slate-400 italic leading-relaxed pt-1">All real-time reporting logs and dynamic entry corrections submitted by users directly enrich this localized performance copy.</p>
+                <p class="text-[11px] text-slate-500 italic leading-relaxed pt-1">All real-time reporting logs and dynamic entry corrections submitted by users directly enrich this localized performance copy.</p>
             </div>
 
             <!-- Modal Footer Button Trigger Block -->
             <div class="border-t border-slate-100 pt-3 mt-auto flex flex-col items-center gap-2">
-                <div class="text-[10px] bg-slate-100 px-3 py-1 rounded-md font-bold text-slate-500 font-en uppercase tracking-wider">Platform Version 2.4.0 Edge</div>
+                <div class="text-[10px] bg-slate-100 px-3 py-1 rounded-md font-bold text-slate-600 font-en uppercase tracking-wider">Platform Version 2.4.0 Edge</div>
                 <button onclick="toggleCreditsModal()" class="w-full bg-slate-950 hover:bg-slate-900 text-white font-semibold text-sm py-2.5 rounded-xl transition-all cursor-pointer shadow-xs text-center">Close System Profile</button>
             </div>
         </div>
     </div>
 
     <!-- FIXED WINDOW LAYOUT CONTAINER: COMPOSITE PWA INSTALL BANNER -->
-    <div id="pwa-install-banner" class="hidden fixed bottom-6 right-6 w-[calc(100%-3rem)] sm:w-96 bg-teal-950 text-white p-4 rounded-2xl shadow-2xl flex items-start gap-3 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div id="pwa-install-banner" class="hidden fixed bottom-6 right-6 w-[calc(100%-3rem)] sm:w-96 bg-teal-950 text-white p-4 rounded-2xl shadow-2xl flex items-start gap-3 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300" role="banner">
         <!-- Close Button -->
-        <button id="pwa-close-btn" class="absolute top-2 right-3 text-slate-400 hover:text-white font-bold text-lg cursor-pointer transition-all active:scale-90" onclick="closePwaBanner()">&times;</button>
+        <button id="pwa-close-btn" class="absolute top-2 right-3 text-slate-400 hover:text-white font-bold text-lg cursor-pointer transition-all active:scale-90" onclick="closePwaBanner()" aria-label="Dismiss Banner">&times;</button>
         
         <div class="flex-1 pr-5">
             <h4 class="font-bold text-sm text-teal-300 mb-1">Install Dictionary App</h4>

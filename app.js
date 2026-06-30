@@ -86,7 +86,8 @@ async function fetchWordOfTheDay() {
     if (contentBox) contentBox.classList.add('hidden'); 
 
     try {
-        const localWotdSeeds = ["curiosity", "resilience", "harmony", "eloquent", "benevolent", "innovation", "serenity", "zenith"];
+        // 🛠️ UPDATED: Shifted from English placeholders to active baseline keys inside your KV schema
+        const localWotdSeeds = ["a.c.", "a.d.", "a.k.a."];
         
         const rightNow = new Date(); 
         const calendarSeedInteger = rightNow.getFullYear() * 10000 + (rightNow.getMonth() + 1) * 100 + rightNow.getDate(); 
@@ -314,7 +315,7 @@ function displayDefinition(item) {
         }
     }
 
-    // 🛠️ FIXES: Properties perfectly aligned to your Supabase schema keys
+    // 🛠️ MAPPING FIXED: Tied accurately to your pristine database schema
     viewDefAssamese.innerText = item.meaning || 'সংজ্ঞা পৰীক্ষা কৰা হৈছে...'; 
     viewDefEnglish.innerText = item.english_definition || 'Conceptual definition lookup available.'; 
 
@@ -337,6 +338,9 @@ function loadSavedBookmarksFromStorage() {
     renderFavoritesListUI(); 
 }
 
+// ==========================================
+// MODULE 4 (CONTINUED): RENDER LOGIC
+// ==========================================
 function updateBookmarksStorage() {
     localStorage.setItem('asomiya_lexicon_bookmarks', JSON.stringify(savedBookmarksArray)); 
     renderFavoritesListUI(); 
@@ -462,7 +466,6 @@ async function submitCorrectionToCloud() {
     const feedbackText = correctionFeedback.value.trim(); 
     if (!feedbackText) return alert("Please provide feedback details."); 
     
-    // Find entry trigger and disable it visually to safeguard against twin submission race conditions
     const submitBtn = document.querySelector('#correction-drawer button[onclick="submitCorrectionToCloud()"]');
     if (submitBtn) {
         submitBtn.disabled = true;
@@ -533,14 +536,12 @@ function checkPwaBannerVisibility() {
     
     if (!installBanner) return;
 
-    // If a snooze window timestamp exists and is in the future, enforce hidden state
     if (dismissUntil && Date.now() < parseInt(dismissUntil, 10)) {
         installBanner.classList.add('hidden');
         installBanner.classList.remove('flex');
         return;
     }
 
-    // Otherwise show banner based on specific platform support profiles
     if (isIOSDevice() && !isRunningStandalone()) {
         const bannerTitle = installBanner.querySelector('h4'); 
         const bannerDesc = installBanner.querySelector('p'); 
@@ -589,7 +590,6 @@ function closePwaBanner() {
         installBanner.classList.add('hidden');
         installBanner.classList.remove('flex');
     }
-    // Calculate precise expiration epoch timestamp (7 days forward)
     const expireTimestamp = Date.now() + (SNOOZE_DAYS * 24 * 60 * 60 * 1000);
     localStorage.setItem(PWA_DISMISS_KEY, expireTimestamp);
 }

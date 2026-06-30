@@ -314,13 +314,11 @@ function displayDefinition(item) {
         }
     }
 
-    viewDefAssamese.innerText = item.assamese_definition || 'সংজ্ঞা পৰীক্ষা কৰা হৈছে...'; 
+    // 🛠️ FIXES: Properties perfectly aligned to your Supabase schema keys
+    viewDefAssamese.innerText = item.meaning || 'সংজ্ঞা পৰীক্ষা কৰা হৈছে...'; 
     viewDefEnglish.innerText = item.english_definition || 'Conceptual definition lookup available.'; 
 
-    if (item.context_example && item.context_example.trim() !== "" && item.context_example !== "Context lookup available online.") {
-        exampleBox.classList.remove('hidden'); 
-        viewExample.innerText = item.context_example; 
-    } else if (item.example && item.example.trim() !== "") {
+    if (item.example && item.example.trim() !== "" && item.example !== "Context lookup available online.") {
         exampleBox.classList.remove('hidden'); 
         viewExample.innerText = item.example; 
     } else {

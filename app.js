@@ -86,8 +86,8 @@ async function fetchWordOfTheDay() {
     if (contentBox) contentBox.classList.add('hidden'); 
 
     try {
-        // 🛠️ UPDATED: Shifted from English placeholders to active baseline keys inside your KV schema
-        const localWotdSeeds = ["a.c.", "a.d.", "a.k.a."];
+        // 🛠️ SEEDS ALIGNED: Using your precise lowercase text anchor tags from the KV cache
+        const localWotdSeeds = ["2g", "3-way intersection"];
         
         const rightNow = new Date(); 
         const calendarSeedInteger = rightNow.getFullYear() * 10000 + (rightNow.getMonth() + 1) * 100 + rightNow.getDate(); 
@@ -226,27 +226,6 @@ if (searchInput) {
     });
 }
 
-function hideAutocompleteDropdown() {
-    if (wordSidebarContainer) {
-        wordSidebarContainer.classList.add('hidden'); 
-        wordSidebarContainer.classList.remove('flex'); 
-    }
-}
-
-document.addEventListener('click', function(event) {
-    if (!searchInput || !wordSidebarContainer) return;
-    const isSearchBoxClick = event.target.closest('#search-input') || event.target.closest('#word-sidebar-container'); 
-    if (!isSearchBoxClick) {
-        hideAutocompleteDropdown(); 
-    }
-});
-
-// Helper utility to alter url context state dynamically for search crawler entry index maps
-function updateBrowserHistoryUrl(wordKey) {
-    const nextUrlPath = `${window.location.protocol}//${window.location.host}${window.location.pathname}?word=${encodeURIComponent(wordKey)}`;
-    window.history.pushState({ path: nextUrlPath }, '', nextUrlPath);
-}
-
 // ==========================================
 // MODULE 3: DEFINITION DISPLAY LOGIC
 // ==========================================
@@ -315,7 +294,7 @@ function displayDefinition(item) {
         }
     }
 
-    // 🛠️ MAPPING FIXED: Tied accurately to your pristine database schema
+    // 🛠️ MAPPING STABLE: Feeds fields precisely matching your active custom properties
     viewDefAssamese.innerText = item.meaning || 'সংজ্ঞা পৰীক্ষা কৰা হৈছে...'; 
     viewDefEnglish.innerText = item.english_definition || 'Conceptual definition lookup available.'; 
 
@@ -325,6 +304,26 @@ function displayDefinition(item) {
     } else {
         exampleBox.classList.add('hidden'); 
     }
+}
+
+function hideAutocompleteDropdown() {
+    if (wordSidebarContainer) {
+        wordSidebarContainer.classList.add('hidden'); 
+        wordSidebarContainer.classList.remove('flex'); 
+    }
+}
+
+document.addEventListener('click', function(event) {
+    if (!searchInput || !wordSidebarContainer) return;
+    const isSearchBoxClick = event.target.closest('#search-input') || event.target.closest('#word-sidebar-container'); 
+    if (!isSearchBoxClick) {
+        hideAutocompleteDropdown(); 
+    }
+});
+
+function updateBrowserHistoryUrl(wordKey) {
+    const nextUrlPath = `${window.location.protocol}//${window.location.host}${window.location.pathname}?word=${encodeURIComponent(wordKey)}`;
+    window.history.pushState({ path: nextUrlPath }, '', nextUrlPath);
 }
 
 // ==========================================
@@ -338,9 +337,6 @@ function loadSavedBookmarksFromStorage() {
     renderFavoritesListUI(); 
 }
 
-// ==========================================
-// MODULE 4 (CONTINUED): RENDER LOGIC
-// ==========================================
 function updateBookmarksStorage() {
     localStorage.setItem('asomiya_lexicon_bookmarks', JSON.stringify(savedBookmarksArray)); 
     renderFavoritesListUI(); 

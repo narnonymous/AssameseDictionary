@@ -1,4 +1,4 @@
-name = "dictionary-edge-api"
+name = "assamesedictionary"
 
 main = "src/index.js"
 

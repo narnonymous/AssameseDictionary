@@ -459,14 +459,41 @@ async function submitCorrectionToCloud() {
     const feedbackText = correctionFeedback.value.trim(); 
     if (!feedbackText) return alert("Please provide feedback details."); 
     
-    console.log("Logged Correction Submission:", {
+    // Find entry trigger and disable it visually to safeguard against twin submission race conditions
+    const submitBtn = document.querySelector('#correction-drawer button[onclick="submitCorrectionToCloud()"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Submitting...";
+    }
+
+    const payload = {
         word: activeSelectedWordObj.word,
         issue_type: correctionType.value,
         feedback: feedbackText
-    });
+    };
     
-    alert("ধন্যবাদ! Correction suggestion logged safely."); 
-    closeCorrectionForm(); 
+    try {
+        const response = await fetch(`${EDGE_API_URL}/report-correction`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) throw new Error("Server rejected request entry validation mapping logs");
+        
+        alert("ধন্যবাদ! Correction suggestion logged safely."); 
+        closeCorrectionForm(); 
+    } catch (err) {
+        console.error("Submission operational crash exception trace:", err);
+        alert("Failed to log correction context. Please try again later.");
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Entry Log";
+        }
+    }
 }
 
 function copyWordToClipboard() {

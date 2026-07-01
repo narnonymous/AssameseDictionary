@@ -1,0 +1,6 @@
+# অসমীয়া অভিধান (Assamese Digital Lexicon)
+
+An ultra-fast, edge-cached digital dictionary mapping English words to Assamese definitions, transliterations, and cross-linked synonyms. Optimized for clean programmatic lookups and human accessibility.
+
+## Core Interface
+- [Main Application](https://assamesedictionary.org/) - Live dictionary lookups and interactive semantic definition platform.

@@ -275,7 +275,7 @@ function displayDefinition(item) {
 
                     // ⚡ Check in the background if the word exists in your 146k KV cache
                     const targetTerm = termText.toLowerCase();
-                    fetch(`${EDGE_API_URL}/word/${encodeURIComponent(targetTerm)}`, { method: 'HEAD' })
+                    fetch(`${EDGE_API_URL}/word/${encodeURIComponent(targetTerm)}`)
                         .then(response => {
                             if (response.ok) {
                                 console.log(`🚀 Word found in cache: "${targetTerm}"`);

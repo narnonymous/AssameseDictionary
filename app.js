@@ -256,37 +256,59 @@ function displayDefinition(item) {
     if (meaningTarget) {
         meaningTarget.innerHTML = ''; 
         if (item.meaning) {
+            // Split by commas or semicolons to isolate each keyword token
             const cleanMeaningsArray = item.meaning.split(/[,;]\s*/); 
             const badgeContainer = document.createElement('div'); 
             badgeContainer.className = "flex flex-wrap gap-2 mt-1 mb-2 justify-start"; 
 
             cleanMeaningsArray.forEach(meaningWord => {
-                if (meaningWord.trim() !== "") {
-                    const badge = document.createElement('button'); 
-                    badge.innerText = meaningWord.trim(); 
+                const termText = meaningWord.trim();
+                if (termText !== "") {
+                    // 🏷️ Create it as a structural div badge (clean text look, normal cursor)
+                    const badge = document.createElement('div'); 
+                    badge.innerText = termText; 
                     
-                    const isBadgeAssamese = /[\u0980-\u09FF]/.test(meaningWord); 
-                    badge.className = `px-3 py-1.5 text-xs font-semibold bg-slate-50 hover:bg-teal-600 hover:text-white text-slate-700 rounded-lg border border-slate-200 transition-all duration-150 cursor-pointer active:scale-95 ${isBadgeAssamese ? 'font-as' : 'font-en'}`; 
+                    const isBadgeAssamese = /[\u0980-\u09FF]/.test(termText); 
                     
-                    badge.onclick = async () => {
-                        const targetTerm = meaningWord.trim().toLowerCase(); 
-                        if (searchInput) searchInput.value = targetTerm; 
-                        hideAutocompleteDropdown(); 
+                    // Standard premium badge styling (Allows text selection naturally)
+                    badge.className = `px-3 py-1.5 text-xs font-semibold rounded-lg border bg-slate-50 border-slate-200 text-slate-700 ${isBadgeAssamese ? 'font-as' : 'font-en'}`; 
 
-                        try {
-                            const response = await fetch(`${EDGE_API_URL}/word/${encodeURIComponent(targetTerm)}`);
+                    // ⚡ Check in the background if the word exists in your 146k KV cache
+                    const targetTerm = termText.toLowerCase();
+                    fetch(`${EDGE_API_URL}/word/${encodeURIComponent(targetTerm)}`, { method: 'HEAD' })
+                        .then(response => {
                             if (response.ok) {
-                                const data = await response.json();
-                                data.word = targetTerm; 
-                                displayDefinition(data); 
-                                updateBrowserHistoryUrl(targetTerm);
+                                console.log(`🚀 Word found in cache: "${targetTerm}"`);
+                                
+                                // Upgrade it to a clickable action token instantly
+                                badge.className = `px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-150 bg-white border-teal-200 text-teal-800 hover:bg-teal-600 hover:text-white cursor-pointer active:scale-95 ${isBadgeAssamese ? 'font-as' : 'font-en'}`;
+                                
+                                badge.onclick = () => {
+                                    if (typeof searchInput !== 'undefined' && searchInput) {
+                                        searchInput.value = termText; // Keep visual casing in search bar
+                                    }
+                                    
+                                    if (typeof hideAutocompleteDropdown === 'function') {
+                                        hideAutocompleteDropdown();
+                                    }
+                                    
+                                    // 🛠️ Dynamic function fallback to ensure execution
+                                    if (typeof fetchDetailedDefinition === 'function') {
+                                        fetchDetailedDefinition(targetTerm);
+                                    } else if (typeof fetchWordsFromCloud === 'function') {
+                                        fetchWordsFromCloud(targetTerm);
+                                    } else if (typeof handleSearch === 'function') {
+                                        handleSearch(targetTerm);
+                                    } else {
+                                        console.error("Could not find a valid search trigger function in app.js");
+                                    }
+                                };
                             } else {
-                                fetchWordsFromCloud(targetTerm); 
+                                console.log(`ℹ️ Word not in cache: "${targetTerm}"`);
                             }
-                        } catch (err) {
-                            console.error("Direct badge query failed:", err); 
-                        }
-                    };
+                        })
+                        .catch(err => console.error("Availability check failed:", err));
+
                     badgeContainer.appendChild(badge); 
                 }
             });
@@ -295,8 +317,8 @@ function displayDefinition(item) {
     }
 
     // 🛠️ MAPPING STABLE: Feeds fields precisely matching your active custom properties
-    viewDefAssamese.innerText = item.meaning || 'সংজ্ঞা পৰীক্ষা কৰা হৈছে...'; 
-    viewDefEnglish.innerText = item.english_definition || 'Conceptual definition lookup available.'; 
+    viewDefAssamese.innerText = item.assamese_definition || item.meaning || 'সংজ্ঞা পৰীক্ষা কৰা হৈছে...'; 
+    viewDefEnglish.innerText = item.english_definition || 'Conceptual definition lookup available.';
 
     if (item.example && item.example.trim() !== "" && item.example !== "Context lookup available online.") {
         exampleBox.classList.remove('hidden'); 

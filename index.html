@@ -52,7 +52,6 @@
           media="print" 
           onload="this.media='all'">
     
-    <!-- FIXED PATH RENDERING VECTORS -->
     <link href="/dist/output.css" rel="stylesheet">
     <style>
         .font-as { font-family: 'Noto Serif Bengali', serif; }
@@ -144,6 +143,25 @@
                             Explore Full Definition ➔
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- 404 NOT FOUND STATE COMPONENT -->
+            <div id="not-found-state" class="hidden flex-1 flex flex-col items-center justify-center text-center py-12 gap-5 animate-in fade-in duration-200">
+                <div class="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center text-2xl shadow-xs text-rose-700" aria-hidden="true">🔍</div>
+                <div>
+                    <h2 class="text-slate-900 font-bold text-lg font-as">শব্দটো বিচাৰি পোৱা নগ’ল (Word Not Found)</h2>
+                    <p class="text-sm text-slate-500 mt-1.5 leading-relaxed max-w-sm px-4 font-as">
+                        The word you are looking for "<span id="missing-word-highlight" class="font-bold text-teal-950">--</span>" isn't indexed in our lexicon archive yet.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 mt-2 w-full max-w-xs font-en">
+                    <button onclick="navigateToHomeScreenHome()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer">
+                        Return Home
+                    </button>
+                    <button onclick="openCorrectionFormFrom404()" class="flex-1 bg-white hover:bg-slate-50 text-teal-700 font-bold text-xs py-2.5 px-4 rounded-xl border border-slate-200 transition-all cursor-pointer">
+                        Suggest This Word 🛠️
+                    </button>
                 </div>
             </div>
 
@@ -300,7 +318,6 @@
         </div>
     </div>
 
-    <!-- MAIN CORE SCRIPT INJECTION (FIXED FOR ABSOLUTE SUBDIRECTORIES) -->
     <script src="/app.js"></script>
 </body>
 </html>

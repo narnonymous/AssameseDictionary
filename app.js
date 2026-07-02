@@ -21,6 +21,8 @@ const wordSidebarList = document.getElementById('word-sidebar-list');
 const wordSidebarContainer = document.getElementById('word-sidebar-container'); 
 const emptyState = document.getElementById('empty-state'); 
 const meaningContent = document.getElementById('meaning-content'); 
+const notFoundState = document.getElementById('not-found-state'); 
+const missingWordHighlight = document.getElementById('missing-word-highlight'); 
 
 const viewWord = document.getElementById('view-word'); 
 const viewTransliteration = document.getElementById('view-transliteration'); 
@@ -39,14 +41,13 @@ const correctionFeedback = document.getElementById('correction-feedback');
 
 // Application Bootstrap initialization
 window.onload = () => {
-    // 1. Initial State Initialization
     loadSavedBookmarksFromStorage(); 
     
-    // 2. BACKWARD COMPATIBILITY: Check query param format (?word=excavate)
+    // BACKWARD COMPATIBILITY: Check query param format (?word=excavate)
     const urlParams = new URLSearchParams(window.location.search);
     let wordParam = urlParams.get('word');
 
-    // 3. ADVANCED DIRECTORY ROUTER: Check path format (/word/excavate)
+    // ADVANCED DIRECTORY ROUTER: Check path format (/word/excavate)
     const path = window.location.pathname; 
     if (path.startsWith('/word/')) {
         wordParam = path.split('/word/')[1];
@@ -59,7 +60,6 @@ window.onload = () => {
         hideAutocompleteDropdown();
         fetchDetailedDefinition(cleanWord);
     } else {
-        // Default homepage reset routing state
         navigateToHomeScreenHome(); 
     }
 };
@@ -74,7 +74,6 @@ function navigateToHomeScreenHome() {
     resetDefinitionView(); 
     fetchWordOfTheDay();   
     
-    // Reset history cleanly to root folder
     const clearUrl = window.location.protocol + "//" + window.location.host + "/";
     window.history.replaceState({ path: clearUrl }, '', clearUrl);
 }
@@ -203,9 +202,18 @@ function renderAutocompleteDropdown(data) {
 
 async function fetchDetailedDefinition(targetWord) {
     const cleanWord = targetWord.trim().toLowerCase();
+    
+    if (emptyState) emptyState.classList.add('hidden');
+    if (meaningContent) meaningContent.classList.add('hidden');
+    if (notFoundState) notFoundState.classList.add('hidden');
+
     try {
         const response = await fetch(`${EDGE_API_URL}/word/${encodeURIComponent(cleanWord)}`);
-        if (!response.ok) throw new Error("Detailed lookup failed");
+        
+        if (!response.ok) {
+            trigger404State(targetWord);
+            return;
+        }
         
         const fullData = await response.json();
         fullData.word = targetWord; 
@@ -213,6 +221,7 @@ async function fetchDetailedDefinition(targetWord) {
         updateBrowserHistoryUrl(cleanWord);
     } catch(err) {
         console.error("Detailed definition retrieval error:", err);
+        trigger404State(targetWord);
     }
 }
 
@@ -240,6 +249,7 @@ function displayDefinition(item) {
     updateBookmarkStarUI(isBookmarked); 
 
     if (emptyState) emptyState.classList.add('hidden'); 
+    if (notFoundState) notFoundState.classList.add('hidden');
     if (meaningContent) meaningContent.classList.remove('hidden'); 
 
     viewWord.innerText = item.word || ''; 
@@ -326,7 +336,6 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Rewrites browser context natively to clean folder mappings
 function updateBrowserHistoryUrl(wordKey) {
     const nextUrlPath = `${window.location.protocol}//${window.location.host}/word/${encodeURIComponent(wordKey)}`;
     window.history.pushState({ path: nextUrlPath }, '', nextUrlPath);
@@ -411,7 +420,6 @@ function removeBookmarkRecord(wordKey) {
     }
 }
 
-// Fixed absolute base assets references for asset stability
 function updateBookmarkStarUI(isFav) {
     const starBtn = document.getElementById('bookmark-toggle-btn'); 
     if (!starBtn) return;
@@ -490,7 +498,7 @@ async function submitCorrectionToCloud() {
             body: JSON.stringify(payload)
         });
         
-        if (!response.ok) throw new Error("Server rejected entry validation parameters");
+        if (!response.ok) throw new Error("Server rejected request log logging mapping rules");
         
         alert("ধন্যবাদ! Correction suggestion logged safely."); 
         closeCorrectionForm(); 
@@ -519,6 +527,7 @@ function copyWordToClipboard() {
 function resetDefinitionView() {
     if (emptyState) emptyState.classList.remove('hidden'); 
     if (meaningContent) meaningContent.classList.add('hidden'); 
+    if (notFoundState) notFoundState.classList.add('hidden'); 
     activeSelectedWordObj = null; 
 }
 
@@ -619,5 +628,28 @@ function toggleCreditsModal() {
     } else {
         modal.classList.add('hidden'); 
         modal.classList.remove('flex'); 
+    }
+}
+
+// ==========================================
+// MODULE 8: 404 DATA ERROR FALLBACK VIEWS
+// ==========================================
+function trigger404State(failedWord) {
+    if (emptyState) emptyState.classList.add('hidden');
+    if (meaningContent) meaningContent.classList.add('hidden');
+    
+    if (notFoundState && missingWordHighlight) {
+        missingWordHighlight.innerText = failedWord;
+        notFoundState.classList.remove('hidden');
+        notFoundState.classList.add('flex');
+    }
+}
+
+function openCorrectionFormFrom404() {
+    if (notFoundState && missingWordHighlight) {
+        activeSelectedWordObj = { word: missingWordHighlight.innerText };
+        openCorrectionForm();
+        if (correctionType) correctionType.value = "meaning";
+        if (correctionFeedback) correctionFeedback.value = "This word is missing from the dictionary. Please add its definition.";
     }
 }

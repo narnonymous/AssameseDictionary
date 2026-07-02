@@ -42,9 +42,15 @@ window.onload = () => {
     // 1. Initial State Initialization
     loadSavedBookmarksFromStorage(); 
     
-    // 2. STRATEGY 1 URL DEEPLINK ROUTER: Check if visitor loaded a specific entry
+    // 2. BACKWARD COMPATIBILITY: Check query param format (?word=excavate)
     const urlParams = new URLSearchParams(window.location.search);
-    const wordParam = urlParams.get('word');
+    let wordParam = urlParams.get('word');
+
+    // 3. ADVANCED DIRECTORY ROUTER: Check path format (/word/excavate)
+    const path = window.location.pathname; 
+    if (path.startsWith('/word/')) {
+        wordParam = path.split('/word/')[1];
+    }
 
     if (wordParam) {
         const cleanWord = decodeURIComponent(wordParam).trim().toLowerCase();
@@ -68,11 +74,9 @@ function navigateToHomeScreenHome() {
     resetDefinitionView(); 
     fetchWordOfTheDay();   
     
-    // Clean browser history string query if user explicitly wipes screen
-    if (window.location.search) {
-        const clearUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        window.history.replaceState({ path: clearUrl }, '', clearUrl);
-    }
+    // Reset history cleanly to root folder
+    const clearUrl = window.location.protocol + "//" + window.location.host + "/";
+    window.history.replaceState({ path: clearUrl }, '', clearUrl);
 }
 
 // ==========================================
@@ -86,7 +90,6 @@ async function fetchWordOfTheDay() {
     if (contentBox) contentBox.classList.add('hidden'); 
 
     try {
-        // 🛠️ SEEDS ALIGNED: Using your precise lowercase text anchor tags from the KV cache
         const localWotdSeeds = ["2g", "3-way intersection"];
         
         const rightNow = new Date(); 
@@ -256,7 +259,6 @@ function displayDefinition(item) {
     if (meaningTarget) {
         meaningTarget.innerHTML = ''; 
         if (item.meaning) {
-            // Split by commas or semicolons to isolate each keyword token
             const cleanMeaningsArray = item.meaning.split(/[,;]\s*/); 
             const badgeContainer = document.createElement('div'); 
             badgeContainer.className = "flex flex-wrap gap-2 mt-1 mb-2 justify-start"; 
@@ -264,47 +266,29 @@ function displayDefinition(item) {
             cleanMeaningsArray.forEach(meaningWord => {
                 const termText = meaningWord.trim();
                 if (termText !== "") {
-                    // 🏷️ Create it as a structural div badge (clean text look, normal cursor)
                     const badge = document.createElement('div'); 
                     badge.innerText = termText; 
                     
                     const isBadgeAssamese = /[\u0980-\u09FF]/.test(termText); 
-                    
-                    // Standard premium badge styling (Allows text selection naturally)
                     badge.className = `px-3 py-1.5 text-xs font-semibold rounded-lg border bg-slate-50 border-slate-200 text-slate-700 ${isBadgeAssamese ? 'font-as' : 'font-en'}`; 
 
-                    // ⚡ Check in the background if the word exists in your 146k KV cache
                     const targetTerm = termText.toLowerCase();
                     fetch(`${EDGE_API_URL}/word/${encodeURIComponent(targetTerm)}`)
                         .then(response => {
                             if (response.ok) {
-                                console.log(`🚀 Word found in cache: "${targetTerm}"`);
-                                
-                                // Upgrade it to a clickable action token instantly
                                 badge.className = `px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-150 bg-white border-teal-200 text-teal-800 hover:bg-teal-600 hover:text-white cursor-pointer active:scale-95 ${isBadgeAssamese ? 'font-as' : 'font-en'}`;
                                 
                                 badge.onclick = () => {
                                     if (typeof searchInput !== 'undefined' && searchInput) {
-                                        searchInput.value = termText; // Keep visual casing in search bar
+                                        searchInput.value = termText; 
                                     }
-                                    
                                     if (typeof hideAutocompleteDropdown === 'function') {
                                         hideAutocompleteDropdown();
                                     }
-                                    
-                                    // 🛠️ Dynamic function fallback to ensure execution
                                     if (typeof fetchDetailedDefinition === 'function') {
                                         fetchDetailedDefinition(targetTerm);
-                                    } else if (typeof fetchWordsFromCloud === 'function') {
-                                        fetchWordsFromCloud(targetTerm);
-                                    } else if (typeof handleSearch === 'function') {
-                                        handleSearch(targetTerm);
-                                    } else {
-                                        console.error("Could not find a valid search trigger function in app.js");
                                     }
                                 };
-                            } else {
-                                console.log(`ℹ️ Word not in cache: "${targetTerm}"`);
                             }
                         })
                         .catch(err => console.error("Availability check failed:", err));
@@ -316,7 +300,6 @@ function displayDefinition(item) {
         }
     }
 
-    // 🛠️ MAPPING STABLE: Feeds fields precisely matching your active custom properties
     viewDefAssamese.innerText = item.assamese_definition || item.meaning || 'সংজ্ঞা পৰীক্ষা কৰা হৈছে...'; 
     viewDefEnglish.innerText = item.english_definition || 'Conceptual definition lookup available.';
 
@@ -343,8 +326,9 @@ document.addEventListener('click', function(event) {
     }
 });
 
+// Rewrites browser context natively to clean folder mappings
 function updateBrowserHistoryUrl(wordKey) {
-    const nextUrlPath = `${window.location.protocol}//${window.location.host}${window.location.pathname}?word=${encodeURIComponent(wordKey)}`;
+    const nextUrlPath = `${window.location.protocol}//${window.location.host}/word/${encodeURIComponent(wordKey)}`;
     window.history.pushState({ path: nextUrlPath }, '', nextUrlPath);
 }
 
@@ -427,6 +411,7 @@ function removeBookmarkRecord(wordKey) {
     }
 }
 
+// Fixed absolute base assets references for asset stability
 function updateBookmarkStarUI(isFav) {
     const starBtn = document.getElementById('bookmark-toggle-btn'); 
     if (!starBtn) return;
@@ -505,12 +490,12 @@ async function submitCorrectionToCloud() {
             body: JSON.stringify(payload)
         });
         
-        if (!response.ok) throw new Error("Server rejected request entry validation mapping logs");
+        if (!response.ok) throw new Error("Server rejected entry validation parameters");
         
         alert("ধন্যবাদ! Correction suggestion logged safely."); 
         closeCorrectionForm(); 
     } catch (err) {
-        console.error("Submission operational crash exception trace:", err);
+        console.error("Submission crash exception trace:", err);
         alert("Failed to log correction context. Please try again later.");
     } finally {
         if (submitBtn) {

@@ -103,10 +103,8 @@ async function fetchWordOfTheDay() {
         
         const lockedDailyIndex = Math.abs(stringHashCounter) % localWotdSeeds.length; 
         const targetSeedWord = localWotdSeeds[lockedDailyIndex]; 
-
         const targetUrl = `${EDGE_API_URL}/word/${targetSeedWord}`;
-        
-        // Network-First lookup with local cache fallback
+
         let dailyWord;
         if (!navigator.onLine) {
             const cacheMatch = await caches.match(targetUrl);
@@ -135,7 +133,16 @@ async function fetchWordOfTheDay() {
 
     } catch (err) {
         console.error("Daily highlight processing failure:", err);
-        if (loader) loader.textContent = "System ready. Begin searching above."; 
+        if (loader) {
+            loader.classList.add('hidden');
+            const fallbackText = document.createElement('p');
+            fallbackText.className = "text-xs text-slate-400 italic text-center py-4";
+            fallbackText.textContent = "System ready. Begin searching above.";
+            if (contentBox) {
+                contentBox.appendChild(fallbackText);
+                contentBox.classList.remove('hidden');
+            }
+        }
     }
 }
 
@@ -167,7 +174,6 @@ async function fetchWordsFromCloud(query) {
     }
 
     if (!navigator.onLine) {
-        // If offline, display a quick status notice in dropdown instead of failing silently
         renderAutocompleteDropdown([]);
         return;
     }
@@ -195,10 +201,13 @@ function renderAutocompleteDropdown(data) {
     wordSidebarContainer.classList.remove('hidden'); 
     wordSidebarContainer.classList.add('flex'); 
 
-    document.getElementById('dropdown-status-label').textContent = navigator.onLine ? `Matches Found (${totalCount})` : "Offline Mode Active"; 
+    const statusLabel = document.getElementById('dropdown-status-label');
+    if (statusLabel) {
+        statusLabel.textContent = navigator.onLine ? `Matches Found (${totalCount})` : "Offline Mode Active"; 
+    }
 
     if (!navigator.onLine) {
-        wordSidebarList.innerHTML = `<p class="text-xs text-amber-600 py-4 text-center italic">You are currently offline. Previously viewed words are accessible via history or bookmarks.</p>`;
+        wordSidebarList.innerHTML = `<p class="text-xs text-amber-600 py-4 text-center italic px-3">You are currently offline. Previously viewed terms remain accessible via history.</p>`;
         return;
     }
 
@@ -230,7 +239,6 @@ async function fetchDetailedDefinition(targetWord) {
 
     const targetUrl = `${EDGE_API_URL}/word/${encodeURIComponent(cleanWord)}`;
 
-    // ⚡ INTERCEPT INTERNET LOSS VIA SERVICE WORKER ENGINE
     if (!navigator.onLine) {
         try {
             const cacheMatch = await caches.match(targetUrl);
@@ -274,6 +282,7 @@ async function fetchDetailedDefinition(targetWord) {
 }
 
 if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
     searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && currentDropdownMatches.length > 0) {
             const queryVal = searchInput.value.trim().toLowerCase(); 
@@ -519,4 +528,190 @@ function openCorrectionForm() {
     }
 }
 
-// ... Keep remaining Module 5, 6, 7 and 8 functions unmodified ...
+function closeCorrectionForm() {
+    if (correctionDrawer) {
+        correctionDrawer.classList.add('hidden'); 
+        correctionDrawer.classList.remove('flex'); 
+    }
+}
+
+async function submitCorrectionToCloud() {
+    const feedbackText = correctionFeedback.value.trim(); 
+    if (!feedbackText) return alert("Please provide feedback details."); 
+    
+    const submitBtn = document.querySelector('#correction-drawer button[onclick="submitCorrectionToCloud()"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Submitting...";
+    }
+
+    const payload = {
+        word: activeSelectedWordObj.word,
+        issue_type: correctionType.value,
+        feedback: feedbackText
+    };
+    
+    try {
+        const response = await fetch(`${EDGE_API_URL}/report-correction`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) throw new Error("Server rejected request log logging mapping rules");
+        
+        alert("ধন্যবাদ! Correction suggestion logged safely."); 
+        closeCorrectionForm(); 
+    } catch (err) {
+        console.error("Submission crash exception trace:", err);
+        alert("Failed to log correction context. Please try again later.");
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Entry Log";
+        }
+    }
+}
+
+function copyWordToClipboard() {
+    const wordText = viewWord.innerText; 
+    navigator.clipboard.writeText(wordText).then(() => {
+        const copyBtn = document.getElementById('copy-toast-btn'); 
+        if (copyBtn) {
+            copyBtn.innerText = "✓ Copied!"; 
+            setTimeout(() => { copyBtn.innerText = "📋 Copy Word"; }, 1500); 
+        }
+    });
+}
+
+function resetDefinitionView() {
+    if (emptyState) emptyState.classList.remove('hidden'); 
+    if (meaningContent) meaningContent.classList.add('hidden'); 
+    if (notFoundState) notFoundState.classList.add('hidden'); 
+    activeSelectedWordObj = null; 
+}
+
+// ==========================================
+// MODULE 6: ADVANCED PWA INSTALL MANAGER
+// ==========================================
+const isIOSDevice = () => {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; 
+};
+
+const isRunningStandalone = () => {
+    return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true); 
+};
+
+function checkPwaBannerVisibility() {
+    const dismissUntil = localStorage.getItem(PWA_DISMISS_KEY);
+    const installBanner = document.getElementById('pwa-install-banner'); 
+    
+    if (!installBanner) return;
+
+    if (dismissUntil && Date.now() < parseInt(dismissUntil, 10)) {
+        installBanner.classList.add('hidden');
+        installBanner.classList.remove('flex');
+        return;
+    }
+
+    if (isIOSDevice() && !isRunningStandalone()) {
+        const bannerTitle = installBanner.querySelector('h4'); 
+        const bannerDesc = installBanner.querySelector('p'); 
+        const bannerBtn = installBanner.querySelector('button'); 
+        
+        if (bannerTitle) bannerTitle.textContent = "Add to iPhone Home Screen"; 
+        if (bannerDesc) bannerDesc.textContent = "Tap Safari's 'Share' icon below, then select 'Add to Home Screen'! 🍏"; 
+        
+        if (bannerBtn) {
+            bannerBtn.textContent = "How to Install"; 
+            bannerBtn.onclick = () => {
+                alert("To install on iOS:\n\n1. Click the 'Share' button at the bottom of Safari (the square box with an up arrow).\n2. Scroll down the menu options.\n3. Tap 'Add to Home Screen'."); 
+            };
+        }
+        installBanner.classList.remove('hidden'); 
+        installBanner.classList.add('flex'); 
+    } else if (deferredPWAInstallPrompt) {
+        installBanner.classList.remove('hidden'); 
+        installBanner.classList.add('flex'); 
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    checkPwaBannerVisibility();
+});
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); 
+    deferredPWAInstallPrompt = e; 
+    checkPwaBannerVisibility();
+});
+
+async function triggerNativePWAInstallation() {
+    if (!deferredPWAInstallPrompt) return;
+    
+    deferredPWAInstallPrompt.prompt(); 
+    const { outcome } = await deferredPWAInstallPrompt.userChoice; 
+    
+    deferredPWAInstallPrompt = null; 
+    closePwaBanner();
+}
+
+function closePwaBanner() {
+    const installBanner = document.getElementById('pwa-install-banner');
+    if (installBanner) {
+        installBanner.classList.add('hidden');
+        installBanner.classList.remove('flex');
+    }
+    const expireTimestamp = Date.now() + (SNOOZE_DAYS * 24 * 60 * 60 * 1000);
+    localStorage.setItem(PWA_DISMISS_KEY, expireTimestamp);
+}
+
+window.addEventListener('appinstalled', () => {
+    deferredPWAInstallPrompt = null; 
+    const installBanner = document.getElementById('pwa-install-banner'); 
+    if (installBanner) {
+        installBanner.classList.add('hidden'); 
+        installBanner.classList.remove('flex'); 
+    }
+});
+
+// ==========================================
+// MODULE 7: CREDITS MODAL CONTROLLER
+// ==========================================
+function toggleCreditsModal() {
+    const modal = document.getElementById('credits-modal'); 
+    if (!modal) return;
+    
+    if (modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden'); 
+        modal.classList.add('flex'); 
+    } else {
+        modal.classList.add('hidden'); 
+        modal.classList.remove('flex'); 
+    }
+}
+
+// ==========================================
+// MODULE 8: 404 DATA ERROR FALLBACK VIEWS
+// ==========================================
+function trigger404State(failedWord) {
+    if (emptyState) emptyState.classList.add('hidden');
+    if (meaningContent) meaningContent.classList.add('hidden');
+    
+    if (notFoundState && missingWordHighlight) {
+        missingWordHighlight.innerText = failedWord;
+        notFoundState.classList.remove('hidden');
+        notFoundState.classList.add('flex');
+    }
+}
+
+function openCorrectionFormFrom404() {
+    if (notFoundState && missingWordHighlight) {
+        activeSelectedWordObj = { word: missingWordHighlight.innerText };
+        openCorrectionForm();
+        if (correctionType) correctionType.value = "meaning";
+        if (correctionFeedback) correctionFeedback.value = "This word is missing from the dictionary. Please add its definition.";
+    }
+}
